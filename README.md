@@ -4,7 +4,7 @@
 - Implementation GUI of [Merge Block Weighted] (https://note.com/kohya_ss/n/n9a485a066d5b) idea by kohya_ss
    - change some part of script to adjust for AUTO1111, basic method is not changed.
 
-![](misc/bw01.png)
+![](misc/bw01-1.png)
 
 ## How to Install
 
@@ -22,6 +22,15 @@
 
 ### Set merge ratio for each block of U-Net
 
+- Select Presets by Dropdown
+  
+  ![](misc/bw08.png)
+  
+  You can manage presets on tsv file (tab separated file) at `extention/<this extension>/csv/preset.tsv`
+  ![](misc/bw06.png)
+
+- or Input at GUI Slider
+
 ![](misc/bw03.png)
 
 - "INxx" is input blocks. 12 blocks
@@ -33,7 +42,7 @@
 ![](misc/bw04.png)
 
 - You can write your weights in "Textbox" and "Apply block weight from text"
-
+  
    - Weights must have 25 values and comma separated
 
 ### Setting values
@@ -42,10 +51,10 @@
 
 - set "base_alpha"
 
-| base_alpha | |
-| ----- | ----------------------------------------------------------------------------- |
-| 1     | merged model uses (Text Encoder、Auto Encoder) 100% from `model_A`|
-| 0     | marged model uses (Text Encoder、Auto Encoder) 100% from `model_B`|
+| base_alpha |                                                                   |
+| ---------- | ----------------------------------------------------------------- |
+| 1          | merged model uses (Text Encoder、Auto Encoder) 100% from `model_A` |
+| 0          | marged model uses (Text Encoder、Auto Encoder) 100% from `model_B` |
 
 ### Other settings
 
@@ -56,15 +65,25 @@
 
 - Merged output is saved in normal "Model" folder.
 
+## Other function
+
+### Save Merge Log
+
+- save log about operated merge, as below,
+  ![](misc/bw07.png)
+
+- log is saved at `extension/<this extension>/csv/history.tsv`
+
 ## Sample/Example
 
 - kohya_ss さんのテストを再現してみる
-
+  
    - Compare SD15 and WD13 / Stable Diffusion 1.5 と WD 1.3 の結果を見る
+      - ※元記事は SD14 を使用 (WD13はSD14ベース)
    - see also [Stable DiffusionのモデルをU-Netの深さに応じて比率を変えてマージする｜Kohya S.｜note](https://note.com/kohya_ss/n/n9a485a066d5b)
 
 - 準備する/マージして作るモデルは、以下の通り / Prepare models as below,
-
+  
   | Model Name      |                                                                   |
   | --------------- | ----------------------------------------------------------------- |
   | sd-v1.5-pruned  | Stable Diffusion v1.5                                             |
@@ -74,7 +93,7 @@
   | bw-merge2-2-2   | Merge Block Weighted<br>SD15 and WD13. base_alpha=0<br>weightは後述2 |
 
 - テスト用のGeneration Info, Seedは 1～4 の4つ
-
+  
   ```
   masterpiece, best quality, beautiful anime girl, school uniform, strong rim light, intense shadows, highly detailed, cinematic lighting, taken by Canon EOS 5D Simga Art Lens 50mm f1.8 ISO 100 Shutter Speed 1000
   Negative prompt: lowres, bad anatomy, bad hands, error, missing fingers, cropped, worst quality, low quality, normal quality, jpeg artifacts, blurry
@@ -85,7 +104,8 @@
 
 ![](misc/xy_plus-0000-40-7_1.png)
 
--  変化傾向は、
+- 変化傾向は、
+  
    - bw-merge1 で、顔立ちがややアニメ化 (sd15-wd13-ws50と比較して)
    - bw-merge2 で、ややリアル風（特に seed=3 の目が良い）
 

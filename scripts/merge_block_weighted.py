@@ -67,6 +67,7 @@ def merge(weights:list, model_0, model_1, device="cpu", base_alpha=0.5, output_f
     re_out = re.compile(r'\.output_blocks\.(\d+)\.') # 12
 
     dprint(f"-- start Stage 1/2 --", verbose)
+    count_target_of_basealpha = 0
     for key in (tqdm(theta_0.keys(), desc="Stage 1/2") if not verbose else theta_0.keys()):
         if "model" in key and key in theta_1:
             dprint(f"  key : {key}", verbose)
@@ -102,6 +103,9 @@ def merge(weights:list, model_0, model_1, device="cpu", base_alpha=0.5, output_f
                 if weight_index >= 0:
                     current_alpha = weights[weight_index]
                     dprint(f"weighted '{key}': {current_alpha}", verbose)
+            else:
+                count_target_of_basealpha = count_target_of_basealpha + 1
+                dprint(f"base_alpha applied: [{key}]", verbose)
 
             theta_0[key] = (1 - current_alpha) * theta_0[key] + current_alpha * theta_1[key]
 
@@ -122,4 +126,4 @@ def merge(weights:list, model_0, model_1, device="cpu", base_alpha=0.5, output_f
 
     print("Done!")
 
-    return True, output_file
+    return True, f"{output_file}<br>base_alpha applied [{count_target_of_basealpha}] times."
