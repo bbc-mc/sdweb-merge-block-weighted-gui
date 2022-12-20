@@ -11,6 +11,7 @@
 - Go to `Extensions` tab on your web UI
 - `Install from URL` with this repo URL
 - Install
+- Restart Web UI
 
 ## How to use
 
@@ -53,8 +54,8 @@
 
 | base_alpha |                                                                   |
 | ---------- | ----------------------------------------------------------------- |
-| 1          | merged model uses (Text Encoder、Auto Encoder) 100% from `model_A` |
-| 0          | marged model uses (Text Encoder、Auto Encoder) 100% from `model_B` |
+| 0          | merged model uses (Text Encoder、Auto Encoder) 100% from `model_A` |
+| 1          | marged model uses (Text Encoder、Auto Encoder) 100% from `model_B` |
 
 ### Other settings
 
