@@ -32,8 +32,8 @@ class MergeHistory():
 
         if not os.path.exists(self.filepath):
             with open(self.filepath, "w", newline="", encoding="utf-8") as f:
-                wr = writer(f, fieldnames=HEADERS, delimiter='\t')
-                wr.writerow(HEADERS)
+                wr = DictWriter(f, fieldnames=HEADERS, delimiter='\t')
+                wr.writeheader()
         # save to file
         with open(self.filepath, "a", newline="", encoding='utf-8') as f:
             dictwriter = DictWriter(f, fieldnames=HEADERS, delimiter='\t')
