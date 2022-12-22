@@ -6,6 +6,25 @@
 
 ![](misc/bw01-1.png)
 
+## Table of contents
+
+<!--ts-->
+   * [How to Install](#how-to-install)
+   * [How to use](#how-to-use)
+      * [Select `model_A` and `model_B`, and input `Output model name`](#select-model_a-and-model_b-and-input-output-model-name)
+      * [Set merge ratio for each block of U-Net](#set-merge-ratio-for-each-block-of-u-net)
+      * [Setting values](#setting-values)
+      * [Other settings](other-settings)
+   * [Other function](#other-function)
+      * [Save Merge Log](#save-merge-log)
+   * [Sample/Example](#sampleexample)
+     * [result (x/y)](#result-xy)
+     * [後述1: weight1](#%E5%BE%8C%E8%BF%B01-weight1)
+     * [後述2: weight2](#%E5%BE%8C%E8%BF%B02-weight2)
+     * [Preset's grids](#presets-grids)
+   * [Special Thanks](#special-thanks)
+<!--te-->
+
 ## How to Install
 
 - Go to `Extensions` tab on your web UI
@@ -133,6 +152,9 @@
 0.5833333333, 0.5, 0.4166666667, 0.3333333333, 0.25, 0.1666666667,
 0.0833333333, 0
 ```
+
+### Preset's grids
+![GRAD_V](misc/preset_grid/GRAD_V.PNG) ![GRAD_A](misc/preset_grid/GRAD_A.PNG) ![FLAT_25](misc/preset_grid/FLAT_25.PNG) ![FLAT_75](misc/preset_grid/FLAT_75.PNG) ![WRAP08](misc/preset_grid/WRAP08.PNG) ![WRAP12](misc/preset_grid/WRAP12.PNG) ![WRAP14](misc/preset_grid/WRAP14.PNG) ![WRAP16](misc/preset_grid/WRAP16.PNG) ![MID12_50](misc/preset_grid/MID12_50.PNG) ![OUT07](misc/preset_grid/OUT07.PNG) ![OUT12](misc/preset_grid/OUT12.PNG) ![OUT12_5](misc/preset_grid/OUT12_5.PNG) ![RING08_SOFT](misc/preset_grid/RING08_SOFT.PNG) ![RING08_5](misc/preset_grid/RING08_5.PNG) ![RING10_5](misc/preset_grid/RING10_5.PNG) ![RING10_3](misc/preset_grid/RING10_3.PNG) ![SMOOTHSTEP](misc/preset_grid/SMOOTHSTEP.PNG) ![REVERSE_SMOOTHSTEP](misc/preset_grid/REVERSE_SMOOTHSTEP.PNG) ![SMOOTHSTEP*2](misc/preset_grid/SMOOTHSTEPx2.PNG) ![R_SMOOTHSTEP*2](misc/preset_grid/R_SMOOTHSTEPx2.PNG) ![SMOOTHSTEP*3](misc/preset_grid/SMOOTHSTEPx3.PNG) ![R_SMOOTHSTEP*3](misc/preset_grid/R_SMOOTHSTEPx3.PNG) ![SMOOTHSTEP*4](misc/preset_grid/SMOOTHSTEPx4.PNG) ![R_SMOOTHSTEP*4](misc/preset_grid/R_SMOOTHSTEPx4.PNG) ![SMOOTHSTEP/2](misc/preset_grid/SMOOTHSTEP_2.PNG) ![R_SMOOTHSTEP/2](misc/preset_grid/R_SMOOTHSTEP_2.PNG) ![SMOOTHSTEP/3](misc/preset_grid/SMOOTHSTEP_3.PNG) ![R_SMOOTHSTEP/3](misc/preset_grid/R_SMOOTHSTEP_3.PNG) ![SMOOTHSTEP/4](misc/preset_grid/SMOOTHSTEP_4.PNG) ![R_SMOOTHSTEP/4](misc/preset_grid/R_SMOOTHSTEP_4.PNG) ![COSINE](misc/preset_grid/COSINE.PNG) ![REVERSE_COSINE](misc/preset_grid/REVERSE_COSINE.PNG) ![CUBIC_HERMITE](misc/preset_grid/CUBIC_HERMITE.PNG) ![REVERSE_CUBIC_HERMITE](misc/preset_grid/REVERSE_CUBIC_HERMITE.PNG) 
 
 ## Special Thanks
 
