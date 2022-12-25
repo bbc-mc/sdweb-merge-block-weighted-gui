@@ -8,14 +8,24 @@ from modules import scripts
 
 
 CSV_FILE_PATH = "csv/preset.tsv"
+MYPRESET_PATH = "csv/preset_own.tsv"
+HEADER = ["preset_name", "preset_weights"]
 path_root = scripts.basedir()
 
 
 class PresetWeights():
     def __init__(self):
-        self.filepath = os.path.join(path_root, CSV_FILE_PATH)
         self.presets = {}
-        with open(self.filepath, "r") as f:
+
+        if os.path.exists(os.path.join(path_root, MYPRESET_PATH)):
+            with open(os.path.join(path_root, MYPRESET_PATH), "r") as f:
+                reader = DictReader(f, delimiter="\t")
+                lines_dict = [row for row in reader]
+                for line_dict in lines_dict:
+                    _w = ",".join([f"{x.strip()}" for x in line_dict["preset_weights"].split(",")])
+                    self.presets.update({line_dict["preset_name"]: _w})
+
+        with open(os.path.join(path_root, CSV_FILE_PATH), "r") as f:
             reader = DictReader(f, delimiter="\t")
             lines_dict = [row for row in reader]
             for line_dict in lines_dict:
@@ -26,7 +36,7 @@ class PresetWeights():
         return [k for k in self.presets.keys()]
 
     def find_weight_by_name(self, preset_name=""):
-        if preset_name and preset_name != "" and preset_name in self.presets:
+        if preset_name and preset_name != "" and preset_name in self.presets.keys():
             return self.presets.get(preset_name, ",".join(["0.5" for _ in range(25)]))
         else:
             return ""
