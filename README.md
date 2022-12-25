@@ -4,6 +4,18 @@
 - Implementation GUI of [Merge Block Weighted] (https://note.com/kohya_ss/n/n9a485a066d5b) idea by kohya_ss
    - change some part of script to adjust for AUTO1111, basic method is not changed.
 
+
+
+# Recent Update
+
+- 2022/12/25: Add new feature and new UI
+  
+   - Read "README" [English](README_each.md)/[日本語](README_each.ja.md)
+
+# 
+
+# What is this
+
 ![](misc/bw01-1.png)
 
 ## How to Install
