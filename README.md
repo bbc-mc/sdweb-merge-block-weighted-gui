@@ -169,28 +169,30 @@
 ### Preset's grids
 
 <p align="center">
-<img src="misc/preset_grid/GRAD_V.PNG" width="350" /> <img src="misc/preset_grid/GRAD_A.PNG" width="350" /> <img src="misc/preset_grid/FLAT_25.PNG" width="350" /> <img src="misc/preset_grid/FLAT_75.PNG" width="350" /> <img src="misc/preset_grid/WRAP08.PNG" width="350" /> <img src="misc/preset_grid/WRAP12.PNG" width="350" /> <img src="misc/preset_grid/WRAP14.PNG" width="350" /> <img src="misc/preset_grid/WRAP16.PNG" width="350" /> <img src="misc/preset_grid/MID12_50.PNG" width="350" /> <img src="misc/preset_grid/OUT07.PNG" width="350" /> <img src="misc/preset_grid/OUT12.PNG" width="350" /> <img src="misc/preset_grid/OUT12_5.PNG" width="350" /> <img src="misc/preset_grid/RING08_SOFT.PNG" width="350" /> <img src="misc/preset_grid/RING08_5.PNG" width="350" /> <img src="misc/preset_grid/RING10_5.PNG" width="350" /> <img src="misc/preset_grid/RING10_3.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP.PNG" width="350" /> <img src="misc/preset_grid/REVERSE_SMOOTHSTEP.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEPx2.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEPx2.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEPx3.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEPx3.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEPx4.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEPx4.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP_2.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEP_2.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP_3.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEP_3.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP_4.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEP_4.PNG" width="350" /> <img src="misc/preset_grid/COSINE.PNG" width="350" /> <img src="misc/preset_grid/REVERSE_COSINE.PNG" width="350" /> <img src="misc/preset_grid/CUBIC_HERMITE.PNG" width="350" /> <img src="misc/preset_grid/REVERSE_CUBIC_HERMITE.PNG" width="350" />
+<img src="misc/preset_grid/GRAD_V.PNG" width="350" /> <img src="misc/preset_grid/GRAD_A.PNG" width="350" /> <img src="misc/preset_grid/FLAT_25.PNG" width="350" /> <img src="misc/preset_grid/FLAT_75.PNG" width="350" /> <img src="misc/preset_grid/WRAP08.PNG" width="350" /> <img src="misc/preset_grid/WRAP12.PNG" width="350" /> <img src="misc/preset_grid/WRAP14.PNG" width="350" /> <img src="misc/preset_grid/WRAP16.PNG" width="350" /> <img src="misc/preset_grid/MID12_50.PNG" width="350" /> <img src="misc/preset_grid/OUT07.PNG" width="350" /> <img src="misc/preset_grid/OUT12.PNG" width="350" /> <img src="misc/preset_grid/OUT12_5.PNG" width="350" /> <img src="misc/preset_grid/RING08_SOFT.PNG" width="350" /> <img src="misc/preset_grid/RING08_5.PNG" width="350" /> <img src="misc/preset_grid/RING10_5.PNG" width="350" /> <img src="misc/preset_grid/RING10_3.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP.PNG" width="350" /> <img src="misc/preset_grid/REVERSE_SMOOTHSTEP.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEPx2.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEPx2.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEPx3.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEPx3.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEPx4.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEPx4.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP_2.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEP_2.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP_3.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEP_3.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP_4.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEP_4.PNG" width="350" /> <img src="misc/preset_grid/COSINE.PNG" width="350" /> <img src="misc/preset_grid/REVERSE_COSINE.PNG" width="350" /> <img src="misc/preset_grid/TRUE_CUBIC_HERMITE.PNG" width="350" /> <img src="misc/preset_grid/TRUE_REVERSE_CUBIC_HERMITE.PNG" width="350" /> <img src="misc/preset_grid/FAKE_CUBIC_HERMITE.PNG" width="350" /> <img src="misc/preset_grid/FAKE_REVERSE_CUBIC_HERMITE.PNG" width="350" />
 </p>
 
 #### Examples of Sigmoid-like Functions
 
 `a∈{0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24}`
 
-`STEP=100/24`
+`S=100/24` - Steps
 
-`𝝅` = number Pi
+`𝝅` - number Pi
 
-`Q=2`
+`Q=2` - Ratio
 
-`Smoothstep`      <=>   `x=a(STEP)100` & `y=3x^2-2x^3`
+`Cosine` <=>   `x=a(S)100` & `y=(1-COS((x-1)*𝝅))/2`
 
-`Smoothstep*Q`    <=>   `x=a(STEP)100` & ( when `x∈<0;0.5>` , `y=Q(3x^2-2x^3)` ∨ when `x∈(0.5;1>` , `y=2-Q(3x^2-2x^3` )
+`Smoothstep`   <=>   `x=a(S)100` & `y=3x^2-2x^3`
 
-`Smoothstep\Q`    <=>   ( when `a<=12` , `x=a(STEP/Q)100` ∨ when `12<a<=24` , `x=(24-a)(STEP/Q)100` )  &  `y=3x^2-2x^3`
+`Smoothstep*Q` <=>   `x=a(S)100` & ( when `x∈<0;0.5>` , `y=Q(3x^2-2x^3)` ∨ when `x∈(0.5;1>` , `y=2-Q(3x^2-2x^3` )
 
-`Cubic_Hermite`   <=>   `x=a(STEP)100` & `y=(x^3-2*x^2+x)*STEP+(-2*x^3+3*x^2)*(x^3-x^2)*STEP`
+`Smoothstep\Q` <=>   ( when `a<=12` , `x=a(S/Q)100` ∨ when `12<a<=24` , `x=(24-a)(S/Q)100` )  &  `y=3x^2-2x^3`
 
-`Cosine`          <=>   `x=a(STEP)100` & `y=(1-COS((x-1)*𝝅))/2`
+`True_Cubic_Hermite` <=>   `x=a(S)100` & `y=(2*x₁^3-3*x₁^2+1)*(x₁-xₙ₋₁)+(x₁^3-2*x₁^2+x₁)*S+(-2*x₁^3+3*x₁^2)*(x₁^3-x₁^2)*S`
+
+`Fake_Cubic_Hermite` <=>   `x=a(S)100` & `y=(x^3-2*x^2+x)*S+(-2*x^3+3*x^2)*(x^3-x^2)*S`
 
 ## Special Thanks
 
