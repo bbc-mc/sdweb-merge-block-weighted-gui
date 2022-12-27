@@ -18,6 +18,26 @@
 
 ![](misc/bw01-1.png)
 
+## Table of contents
+
+<!--ts-->
+   * [How to Install](#how-to-install)
+   * [How to use](#how-to-use)
+      * [Select `model_A` and `model_B`, and input `Output model name`](#select-model_a-and-model_b-and-input-output-model-name)
+      * [Set merge ratio for each block of U-Net](#set-merge-ratio-for-each-block-of-u-net)
+      * [Setting values](#setting-values)
+      * [Other settings](other-settings)
+   * [Other function](#other-function)
+      * [Save Merge Log](#save-merge-log)
+   * [Sample/Example](#sampleexample)
+      * [result (x/y)](#result-xy)
+      * [後述1: weight1](#%E5%BE%8C%E8%BF%B01-weight1)
+      * [後述2: weight2](#%E5%BE%8C%E8%BF%B02-weight2)
+      * [Preset's grids](#presets-grids)
+         * [Examples of Sigmoid-like Functions](#examples-of-sigmoid-like-functions)
+   * [Special Thanks](#special-thanks)
+<!--te-->
+
 ## How to Install
 
 - Go to `Extensions` tab on your web UI
@@ -145,6 +165,34 @@
 0.5833333333, 0.5, 0.4166666667, 0.3333333333, 0.25, 0.1666666667,
 0.0833333333, 0
 ```
+
+### Preset's grids
+
+<p align="center">
+<img src="misc/preset_grid/GRAD_V.PNG" width="350" /> <img src="misc/preset_grid/GRAD_A.PNG" width="350" /> <img src="misc/preset_grid/FLAT_25.PNG" width="350" /> <img src="misc/preset_grid/FLAT_75.PNG" width="350" /> <img src="misc/preset_grid/WRAP08.PNG" width="350" /> <img src="misc/preset_grid/WRAP12.PNG" width="350" /> <img src="misc/preset_grid/WRAP14.PNG" width="350" /> <img src="misc/preset_grid/WRAP16.PNG" width="350" /> <img src="misc/preset_grid/MID12_50.PNG" width="350" /> <img src="misc/preset_grid/OUT07.PNG" width="350" /> <img src="misc/preset_grid/OUT12.PNG" width="350" /> <img src="misc/preset_grid/OUT12_5.PNG" width="350" /> <img src="misc/preset_grid/RING08_SOFT.PNG" width="350" /> <img src="misc/preset_grid/RING08_5.PNG" width="350" /> <img src="misc/preset_grid/RING10_5.PNG" width="350" /> <img src="misc/preset_grid/RING10_3.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP.PNG" width="350" /> <img src="misc/preset_grid/REVERSE_SMOOTHSTEP.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEPx2.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEPx2.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEPx3.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEPx3.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEPx4.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEPx4.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP_2.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEP_2.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP_3.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEP_3.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP_4.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEP_4.PNG" width="350" /> <img src="misc/preset_grid/COSINE.PNG" width="350" /> <img src="misc/preset_grid/REVERSE_COSINE.PNG" width="350" /> <img src="misc/preset_grid/TRUE_CUBIC_HERMITE.PNG" width="350" /> <img src="misc/preset_grid/TRUE_REVERSE_CUBIC_HERMITE.PNG" width="350" /> <img src="misc/preset_grid/FAKE_CUBIC_HERMITE.PNG" width="350" /> <img src="misc/preset_grid/FAKE_REVERSE_CUBIC_HERMITE.PNG" width="350" />
+</p>
+
+#### Examples of Sigmoid-like Functions
+
+`a∈{0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24}`
+
+`S=100/24` - Steps
+
+`𝝅` - number Pi
+
+`Q=2` - Ratio
+
+`Cosine` <=>   `x=a(S)100` & `y=(1-COS((x-1)*𝝅))/2`
+
+`Smoothstep`   <=>   `x=a(S)100` & `y=3x^2-2x^3`
+
+`Smoothstep*Q` <=>   `x=a(S)100` & ( when `x∈<0;0.5>` , `y=Q(3x^2-2x^3)` ∨ when `x∈(0.5;1>` , `y=2-Q(3x^2-2x^3` )
+
+`Smoothstep\Q` <=>   ( when `a<=12` , `x=a(S/Q)100` ∨ when `12<a<=24` , `x=(24-a)(S/Q)100` )  &  `y=3x^2-2x^3`
+
+`True_Cubic_Hermite` <=>   `x=a(S)100` & `y=(2*x₁^3-3*x₁^2+1)*(x₁-xₙ₋₁)+(x₁^3-2*x₁^2+x₁)*S+(-2*x₁^3+3*x₁^2)*(x₁^3-x₁^2)*S`
+
+`Fake_Cubic_Hermite` <=>   `x=a(S)100` & `y=(x^3-2*x^2+x)*S+(-2*x^3+3*x^2)*(x^3-x^2)*S`
 
 ## Special Thanks
 
