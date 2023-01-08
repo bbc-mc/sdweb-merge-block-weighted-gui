@@ -1,5 +1,6 @@
 import gradio as gr
 import os
+import re
 
 from modules import sd_models, shared
 from tqdm import tqdm
@@ -145,8 +146,8 @@ def on_ui_tabs():
 
         # save log to history.tsv
         sd_models.list_models()
-        model_O_info = sd_models.get_closet_checkpoint_match(model_O)
-        model_O_hash = "" if not model_O_info else model_O_info.hash
+        model_O_info = sd_models.get_closet_checkpoint_match(os.path.basename(_output))
+        model_O_hash = "" if model_O_info is None else model_O_info.hash
         _names = presetWeights.find_names_by_weight(_weights)
         if _names and len(_names) > 0:
             weight_name = _names[0]

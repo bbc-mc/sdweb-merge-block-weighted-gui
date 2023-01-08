@@ -365,7 +365,8 @@ def on_ui_tabs():
 
 
         # save log to history.tsv
-        model_O_info = sd_models.get_closet_checkpoint_match(model_O)
+        sd_models.list_models()
+        model_O_info = sd_models.get_closet_checkpoint_match(os.path.basename(output_file))
         model_O_hash = "" if not model_O_info else model_O_info.hash
         _names = presetWeights.find_names_by_weight(weight_A)
         if _names and len(_names) > 0:
