@@ -17,7 +17,7 @@ def on_ui_tabs():
         with gr.Row():
             with gr.Column(variant="panel"):
                 btn_do_merge_block_weighted = gr.Button(value="Run Merge", variant="primary")
-                btn_clear_weighted = gr.Button(value="Clear values")
+                btn_clear_weight = gr.Button(value="Clear values")
                 btn_reload_checkpoint_mbw = gr.Button(value="Reload checkpoint")
                 html_output_block_weight_info = gr.HTML()
             with gr.Column():
@@ -114,6 +114,8 @@ def on_ui_tabs():
             _model_B_info = model_B_info.model_name
         else:
             _model_B_info = ""
+
+        txt_model_O = re.sub(r'[\\|:|?|"|<|>|\|\*]', '-', txt_model_O)
         model_O = f"bw-merge-{_model_A_name}-{_model_B_info}-{sl_base_alpha}.ckpt" if txt_model_O == "" else txt_model_O
         if ".ckpt" not in model_O:
             model_O = model_O + ".ckpt"
@@ -132,15 +134,17 @@ def on_ui_tabs():
         print(f"output_file: {_output}")
         print(f"weights    : {_weights}")
 
-        result, ret_message = merge(weights=_weights, model_0=model_A, model_1=model_B, allow_overwrite=chk_allow_overwrite, base_alpha=sl_base_alpha, output_file=_output, verbose=chk_verbose_mbw)
+        result, ret_message = merge(weights=_weights, model_0=model_A, model_1=model_B, allow_overwrite=chk_allow_overwrite,
+            base_alpha=sl_base_alpha, output_file=_output, verbose=chk_verbose_mbw
+            )
 
-        sd_models.list_models()
         if result:
             ret_html = "merged.<br>" + f"{model_A}<br>" + f"{model_B}<br>" + f"{model_O}"
         else:
             ret_html = ret_message
 
         # save log to history.tsv
+        sd_models.list_models()
         model_O_info = sd_models.get_closet_checkpoint_match(model_O)
         model_O_hash = "" if not model_O_info else model_O_info.hash
         _names = presetWeights.find_names_by_weight(_weights)
@@ -153,11 +157,13 @@ def on_ui_tabs():
         return gr.update(value=f"{ret_html}")
     btn_do_merge_block_weighted.click(
         fn=onclick_btn_do_merge_block_weighted,
-        inputs=[model_A, model_B] + sl_IN + sl_MID + sl_OUT + [txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite],
+        inputs=[model_A, model_B]
+            + sl_IN + sl_MID + sl_OUT
+            + [txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite],
         outputs=[html_output_block_weight_info]
     )
 
-    btn_clear_weighted.click(
+    btn_clear_weight.click(
         fn=lambda: [gr.update(value=0.5) for _ in range(25)],
         inputs=[],
         outputs=[
