@@ -27,7 +27,10 @@ def dprint(str, flg):
 
 
 def merge(weight_A:list, weight_B:list, model_0, model_1, device="cpu", base_alpha=0.5,
-        output_file="", allow_overwrite=False, verbose=False):
+        output_file="", allow_overwrite=False, verbose=False,
+        save_as_safetensors=False,
+        save_as_half=False,
+        ):
 
     def _check_arg_weight(weight):
         if weight is None:
@@ -53,10 +56,11 @@ def merge(weight_A:list, weight_B:list, model_0, model_1, device="cpu", base_alp
     device = device if device in ["cpu", "cuda"] else "cpu"
 
     alpha = base_alpha
+
+    _footer = "-half" if save_as_half else ""
+    _footer = f"{_footer}.safetensors" if save_as_safetensors else f"{_footer}.ckpt"
     if not output_file or output_file == "":
-        output_file = f'bw-{model_0}-{model_1}-{str(alpha)[2:] + "0"}.ckpt'
-    else:
-        output_file = output_file if ".ckpt" in output_file else output_file + ".ckpt"
+        output_file = f'bw-{model_0}-{model_1}-{str(alpha)[2:] + "0"}{_footer}'
 
     # check if output file already exists
     if os.path.isfile(output_file) and not allow_overwrite:
@@ -139,7 +143,8 @@ def merge(weight_A:list, weight_B:list, model_0, model_1, device="cpu", base_alp
             theta_0[key] = _var1 + _var2 + _var3
 
             # theta_0[key] = (1 - current_alpha) * theta_0[key] + current_alpha * theta_1[key]
-
+            if save_as_half:
+                theta_0[key] = theta_0[key].half()
         else:
             dprint(f"  key - {key}", verbose)
 
@@ -148,12 +153,23 @@ def merge(weight_A:list, weight_B:list, model_0, model_1, device="cpu", base_alp
         if "model" in key and key not in theta_0:
             dprint(f"  key : {key}", verbose)
             theta_0.update({key:theta_1[key]})
+
+            if save_as_half:
+                theta_0[key] = theta_0[key].half()
+
         else:
             dprint(f"  key - {key}", verbose)
 
     print("Saving...")
 
-    torch.save({"state_dict": theta_0}, output_file)
+    _, extension = os.path.splitext(output_file)
+    if extension.lower() == ".safetensors" or save_as_safetensors:
+        if save_as_safetensors and extension.lower() != ".safetensors":
+            output_file = output_file + ".safetensors"
+        import safetensors.torch
+        safetensors.torch.save_file(theta_0, output_file, metadata={"format": "pt"})
+    else:
+        torch.save({"state_dict": theta_0}, output_file)
 
     print("Done!")
 

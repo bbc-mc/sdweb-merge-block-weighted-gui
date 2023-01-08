@@ -32,6 +32,9 @@ def on_ui_tabs():
                     sl_base_alpha = gr.Slider(label="base_alpha", minimum=0, maximum=1, step=0.01, value=0)
                     chk_verbose_mbw = gr.Checkbox(label="verbose console output", value=False)
                     chk_allow_overwrite = gr.Checkbox(label="Allow overwrite output-model", value=False)
+                with gr.Row():
+                    chk_save_as_half = gr.Checkbox(label="Save as half", value=False)
+                    chk_save_as_safetensors = gr.Checkbox(label="Save as safetensors", value=False)
         with gr.Row():
             dd_model_A = gr.Dropdown(label="Model_A", choices=sd_models.checkpoint_tiles())
             dd_model_B = gr.Dropdown(label="Model_B", choices=sd_models.checkpoint_tiles())
@@ -157,7 +160,8 @@ def on_ui_tabs():
         sl_M_B_00,
         sl_OUT_B_00, sl_OUT_B_01, sl_OUT_B_02, sl_OUT_B_03, sl_OUT_B_04, sl_OUT_B_05,
         sl_OUT_B_06, sl_OUT_B_07, sl_OUT_B_08, sl_OUT_B_09, sl_OUT_B_10, sl_OUT_B_11,
-        txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite
+        txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite,
+        chk_save_as_safetensors, chk_save_as_half
     ):
         base_alpha = sl_base_alpha
         _weight_A = ",".join(
@@ -178,7 +182,7 @@ def on_ui_tabs():
             ]])
 
         # debug output
-        print( "#### Merge Block Weighted Each ####")
+        print( "#### Merge Block Weighted : Each ####")
 
         if (not dd_model_A or not dd_model_B) and txt_multi_process_cmd == "":
             _err_msg = f"ERROR: model not found. [{dd_model_A}][{dd_model_B}]"
@@ -200,7 +204,9 @@ def on_ui_tabs():
                         weight_A=_weight_A, weight_B=_weight_B, model_0=dd_model_A, model_1=dd_model_B,
                         allow_overwrite=chk_allow_overwrite, base_alpha=base_alpha, model_Output=txt_model_O,
                         verbose=chk_verbose_mbw,
-                        params=_items
+                        params=_items,
+                        save_as_safetensors=chk_save_as_safetensors,
+                        save_as_half=chk_save_as_half
                         )
                 else:
                     _ret = f"  multi-merge text found, but invalid params. skipped :[{_line}]"
@@ -211,7 +217,9 @@ def on_ui_tabs():
             ret_html += _run_merge(
                 weight_A=_weight_A, weight_B=_weight_B, model_0=dd_model_A, model_1=dd_model_B,
                 allow_overwrite=chk_allow_overwrite, base_alpha=base_alpha, model_Output=txt_model_O,
-                verbose=chk_verbose_mbw
+                verbose=chk_verbose_mbw,
+                save_as_safetensors=chk_save_as_safetensors,
+                save_as_half=chk_save_as_half
                 )
 
         sd_models.list_models()
@@ -222,20 +230,28 @@ def on_ui_tabs():
         fn=onclick_btn_do_merge_block_weighted,
         inputs=[dd_model_A, dd_model_B, txt_multi_process_cmd]
             + sl_A_IN + sl_A_MID + sl_A_OUT + sl_B_IN + sl_B_MID + sl_B_OUT
-            + [txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite],
+            + [txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite]
+            + [chk_save_as_safetensors, chk_save_as_half],
         outputs=[html_output_block_weight_info]
     )
 
     def _run_merge(weight_A, weight_B, model_0, model_1, allow_overwrite=False, base_alpha=0,
-        model_Output="", verbose=False, params=[]
+        model_Output="", verbose=False, params=[],
+        save_as_safetensors=False,
+        save_as_half=False,
         ):
 
-        def validate_output_filename(output_filename):
+        def validate_output_filename(output_filename, save_as_safetensors=False, save_as_half=False):
             output_filename = re.sub(r'[\\|:|?|"|<|>|\|\*]', '-', output_filename)
-            _, ext = os.path.splitext(output_filename)
+            filename_body, filename_ext = os.path.splitext(output_filename)
             _ret = output_filename
-            if ext != ".safetensors" and ext != ".ckpt":
-                _ret = f"{output_filename}.ckpt"
+            _footer = "-half" if save_as_half else ""
+            if filename_ext in [".safetensors", ".ckpt"]:
+                _ret = f"{filename_body}{_footer}{filename_ext}"
+            elif save_as_safetensors:
+                _ret = f"{output_filename}{_footer}.safetensors"
+            else:
+                _ret = f"{output_filename}{_footer}.ckpt"
             return _ret
 
         model_O = ""
@@ -284,7 +300,7 @@ def on_ui_tabs():
 
                         elif _item_l.upper() == "O":
                             if _item_r.strip() != "":
-                                _ret = validate_output_filename(_item_r.strip())
+                                _ret = validate_output_filename(_item_r.strip(), save_as_safetensors=save_as_safetensors, save_as_half=save_as_half)
                                 print(f"  * Output filename changed:[{model_O}] -> [{_ret}]")
                                 model_O = _ret
 
@@ -328,8 +344,8 @@ def on_ui_tabs():
         if model_O == "":
             _a = os.path.splitext(os.path.basename(_model_A_name))[0]
             _b = os.path.splitext(os.path.basename(_model_B_name))[0]
-            model_O = f"bw-merge-{_a}-{_b}-{base_alpha}.ckpt" if model_Output == "" else model_Output
-        model_O = validate_output_filename(model_O)
+            model_O = f"bw-merge-{_a}-{_b}-{base_alpha}" if model_Output == "" else model_Output
+        model_O = validate_output_filename(model_O, save_as_safetensors=save_as_safetensors, save_as_half=save_as_half)
         output_file = os.path.join(shared.cmd_opts.ckpt_dir or sd_models.model_path, model_O)
         #
         # Check params
@@ -352,10 +368,15 @@ def on_ui_tabs():
         print(f"  output_file: {output_file}")
         print(f"  weight_A   : {weight_A}")
         print(f"  weight_B   : {weight_B}")
+        print(f"  half       : {save_as_half}")
 
         result, ret_message = merge(
             weight_A=weight_A, weight_B=weight_B, model_0=model_0, model_1=model_1,
-            allow_overwrite=allow_overwrite, base_alpha=base_alpha, output_file=output_file, verbose=verbose)
+            allow_overwrite=allow_overwrite, base_alpha=base_alpha, output_file=output_file,
+            verbose=verbose,
+            save_as_safetensors=save_as_safetensors,
+            save_as_half=save_as_half,
+            )
         if result:
             ret_html = f"merged. {model_0} + {model_1} = {model_O} <br>"
             print("merged.")
@@ -367,7 +388,7 @@ def on_ui_tabs():
         # save log to history.tsv
         sd_models.list_models()
         model_O_info = sd_models.get_closet_checkpoint_match(os.path.basename(output_file))
-        model_O_hash = "" if not model_O_info else model_O_info.hash
+        model_O_hash = "" if model_O_info is None else model_O_info.hash
         _names = presetWeights.find_names_by_weight(weight_A)
         if _names and len(_names) > 0:
             weight_name = _names[0]
