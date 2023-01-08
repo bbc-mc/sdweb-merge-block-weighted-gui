@@ -6,8 +6,8 @@ from modules import sd_models, shared
 from tqdm import tqdm
 
 from scripts.mbw_each.merge_block_weighted_mod import merge
-from scripts.util.preset_weights import PresetWeights
-from scripts.util.merge_history import MergeHistory
+from scripts.mbw_util.preset_weights import PresetWeights
+from scripts.mbw_util.merge_history import MergeHistory
 
 presetWeights = PresetWeights()
 mergeHistory = MergeHistory()
