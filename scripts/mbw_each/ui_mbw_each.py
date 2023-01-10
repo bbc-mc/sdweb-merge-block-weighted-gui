@@ -33,8 +33,11 @@ def on_ui_tabs():
                     chk_verbose_mbw = gr.Checkbox(label="verbose console output", value=False)
                     chk_allow_overwrite = gr.Checkbox(label="Allow overwrite output-model", value=False)
                 with gr.Row():
-                    chk_save_as_half = gr.Checkbox(label="Save as half", value=False)
-                    chk_save_as_safetensors = gr.Checkbox(label="Save as safetensors", value=False)
+                    with gr.Column(scale=3):
+                        chk_save_as_half = gr.Checkbox(label="Save as half", value=False)
+                        chk_save_as_safetensors = gr.Checkbox(label="Save as safetensors", value=False)
+                    with gr.Column(scale=4):
+                        radio_position_ids = gr.Radio(label="Skip/Reset CLIP position_ids", choices=["None", "Skip", "Force Reset"], value="Skip", type="index")
         with gr.Row():
             dd_model_A = gr.Dropdown(label="Model_A", choices=sd_models.checkpoint_tiles())
             dd_model_B = gr.Dropdown(label="Model_B", choices=sd_models.checkpoint_tiles())
@@ -161,7 +164,8 @@ def on_ui_tabs():
         sl_OUT_B_00, sl_OUT_B_01, sl_OUT_B_02, sl_OUT_B_03, sl_OUT_B_04, sl_OUT_B_05,
         sl_OUT_B_06, sl_OUT_B_07, sl_OUT_B_08, sl_OUT_B_09, sl_OUT_B_10, sl_OUT_B_11,
         txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite,
-        chk_save_as_safetensors, chk_save_as_half
+        chk_save_as_safetensors, chk_save_as_half,
+        radio_position_ids
     ):
         base_alpha = sl_base_alpha
         _weight_A = ",".join(
@@ -206,7 +210,8 @@ def on_ui_tabs():
                         verbose=chk_verbose_mbw,
                         params=_items,
                         save_as_safetensors=chk_save_as_safetensors,
-                        save_as_half=chk_save_as_half
+                        save_as_half=chk_save_as_half,
+                        skip_position_ids=radio_position_ids
                         )
                 else:
                     _ret = f"  multi-merge text found, but invalid params. skipped :[{_line}]"
@@ -219,7 +224,8 @@ def on_ui_tabs():
                 allow_overwrite=chk_allow_overwrite, base_alpha=base_alpha, model_Output=txt_model_O,
                 verbose=chk_verbose_mbw,
                 save_as_safetensors=chk_save_as_safetensors,
-                save_as_half=chk_save_as_half
+                save_as_half=chk_save_as_half,
+                skip_position_ids=radio_position_ids
                 )
 
         sd_models.list_models()
@@ -231,7 +237,7 @@ def on_ui_tabs():
         inputs=[dd_model_A, dd_model_B, txt_multi_process_cmd]
             + sl_A_IN + sl_A_MID + sl_A_OUT + sl_B_IN + sl_B_MID + sl_B_OUT
             + [txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite]
-            + [chk_save_as_safetensors, chk_save_as_half],
+            + [chk_save_as_safetensors, chk_save_as_half, radio_position_ids],
         outputs=[html_output_block_weight_info]
     )
 
@@ -239,6 +245,7 @@ def on_ui_tabs():
         model_Output="", verbose=False, params=[],
         save_as_safetensors=False,
         save_as_half=False,
+        skip_position_ids=0,
         ):
 
         def validate_output_filename(output_filename, save_as_safetensors=False, save_as_half=False):
@@ -369,6 +376,7 @@ def on_ui_tabs():
         print(f"  weight_A   : {weight_A}")
         print(f"  weight_B   : {weight_B}")
         print(f"  half       : {save_as_half}")
+        print(f"  skip ids   : {skip_position_ids} : 0:None, 1:Skip, 2:Reset")
 
         result, ret_message = merge(
             weight_A=weight_A, weight_B=weight_B, model_0=model_0, model_1=model_1,
@@ -376,6 +384,7 @@ def on_ui_tabs():
             verbose=verbose,
             save_as_safetensors=save_as_safetensors,
             save_as_half=save_as_half,
+            skip_position_ids=skip_position_ids,
             )
         if result:
             ret_html = f"merged. {model_0} + {model_1} = {model_O} <br>"

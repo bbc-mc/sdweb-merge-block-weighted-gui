@@ -31,8 +31,11 @@ def on_ui_tabs():
                     chk_verbose_mbw = gr.Checkbox(label="verbose console output", value=False)
                     chk_allow_overwrite = gr.Checkbox(label="Allow overwrite output-model", value=False)
                 with gr.Row():
-                    chk_save_as_half = gr.Checkbox(label="Save as half", value=False)
-                    chk_save_as_safetensors = gr.Checkbox(label="Save as safetensors", value=False)
+                    with gr.Column(scale=3):
+                        chk_save_as_half = gr.Checkbox(label="Save as half", value=False)
+                        chk_save_as_safetensors = gr.Checkbox(label="Save as safetensors", value=False)
+                    with gr.Column(scale=4):
+                        radio_position_ids = gr.Radio(label="Skip/Reset CLIP position_ids", choices=["None", "Skip", "Force Reset"], value="Skip", type="index")
         with gr.Row():
             model_A = gr.Dropdown(label="Model A", choices=sd_models.checkpoint_tiles())
             model_B = gr.Dropdown(label="Model B", choices=sd_models.checkpoint_tiles())
@@ -95,7 +98,8 @@ def on_ui_tabs():
         sl_OUT_00, sl_OUT_01, sl_OUT_02, sl_OUT_03, sl_OUT_04, sl_OUT_05,
         sl_OUT_06, sl_OUT_07, sl_OUT_08, sl_OUT_09, sl_OUT_10, sl_OUT_11,
         txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite,
-        chk_save_as_safetensors, chk_save_as_half
+        chk_save_as_safetensors, chk_save_as_half,
+        radio_position_ids
     ):
 
         # debug output
@@ -157,15 +161,17 @@ def on_ui_tabs():
         print(f"  base_alpha : {sl_base_alpha}")
         print(f"  output_file: {_output}")
         print(f"  weights    : {_weights}")
+        print(f"  skip ids   : {radio_position_ids} : 0:None, 1:Skip, 2:Reset")
 
         result, ret_message = merge(weights=_weights, model_0=model_A, model_1=model_B, allow_overwrite=chk_allow_overwrite,
             base_alpha=sl_base_alpha, output_file=_output, verbose=chk_verbose_mbw,
             save_as_safetensors=chk_save_as_safetensors,
             save_as_half=chk_save_as_half,
+            skip_position_ids=radio_position_ids
             )
 
         if result:
-            ret_html = "merged.<br>" + f"{model_A}<br>" + f"{model_B}<br>" + f"{model_O}"
+            ret_html = "merged.<br>" + f"{model_A}<br>" + f"{model_B}<br>" + f"{model_O}<br>" + f"{_weights}<br>"
             print("merged.")
         else:
             ret_html = ret_message
@@ -188,7 +194,7 @@ def on_ui_tabs():
         inputs=[model_A, model_B]
             + sl_IN + sl_MID + sl_OUT
             + [txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite]
-            + [chk_save_as_safetensors, chk_save_as_half],
+            + [chk_save_as_safetensors, chk_save_as_half, radio_position_ids],
         outputs=[html_output_block_weight_info]
     )
 

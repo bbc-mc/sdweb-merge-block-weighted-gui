@@ -20,6 +20,7 @@ NUM_MID_BLOCK = 1
 NUM_OUTPUT_BLOCKS = 12
 NUM_TOTAL_BLOCKS = NUM_INPUT_BLOCKS + NUM_MID_BLOCK + NUM_OUTPUT_BLOCKS
 
+KEY_POSITION_IDS = "cond_stage_model.transformer.text_model.embeddings.position_ids"
 
 def dprint(str, flg):
     if flg:
@@ -30,6 +31,7 @@ def merge(weight_A:list, weight_B:list, model_0, model_1, device="cpu", base_alp
         output_file="", allow_overwrite=False, verbose=False,
         save_as_safetensors=False,
         save_as_half=False,
+        skip_position_ids=0,
         ):
 
     def _check_arg_weight(weight):
@@ -96,6 +98,20 @@ def merge(weight_A:list, weight_B:list, model_0, model_1, device="cpu", base_alp
     count_target_of_basealpha = 0
     for key in (tqdm(theta_0.keys(), desc="Stage 1/2") if not verbose else theta_0.keys()):
         if "model" in key and key in theta_1:
+
+            if KEY_POSITION_IDS in key:
+                if skip_position_ids == 1:
+                    print(f"  modelA: skip 'position_ids' : {theta_0[KEY_POSITION_IDS].dtype}")
+                    dprint(f"{theta_0[KEY_POSITION_IDS]}", verbose)
+                    continue
+                elif skip_position_ids == 2:
+                    theta_0[key] = torch.tensor([[range(77)]], dtype=torch.int64)
+                    print(f"  modelA: reset 'position_ids': {theta_0[KEY_POSITION_IDS].dtype}")
+                    dprint(f"{theta_0[KEY_POSITION_IDS]}", verbose)
+                    continue
+                else:
+                    print(f"  modelA: key found. do nothing : {skip_position_ids}")
+
             dprint(f"  key : {key}", verbose)
 
             current_alpha_A = 1 - alpha
@@ -151,6 +167,20 @@ def merge(weight_A:list, weight_B:list, model_0, model_1, device="cpu", base_alp
     dprint(f"-- start Stage 2/2 --", verbose)
     for key in tqdm(theta_1.keys(), desc="Stage 2/2"):
         if "model" in key and key not in theta_0:
+
+            if KEY_POSITION_IDS in key:
+                if skip_position_ids == 1:
+                    print(f"  modelB: skip 'position_ids' : {theta_0[KEY_POSITION_IDS].dtype}")
+                    dprint(f"{theta_0[KEY_POSITION_IDS]}", verbose)
+                    continue
+                elif skip_position_ids == 2:
+                    theta_0[key] = torch.tensor([[range(77)]], dtype=torch.int64)
+                    print(f"  modelB: reset 'position_ids': {theta_0[KEY_POSITION_IDS].dtype}")
+                    dprint(f"{theta_0[KEY_POSITION_IDS]}", verbose)
+                    continue
+                else:
+                    print(f"  modelB: key found. do nothing : {skip_position_ids}")
+
             dprint(f"  key : {key}", verbose)
             theta_0.update({key:theta_1[key]})
 
