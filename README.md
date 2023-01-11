@@ -4,12 +4,14 @@
 - Implementation GUI of [Merge Block Weighted] (https://note.com/kohya_ss/n/n9a485a066d5b) idea by kohya_ss
    - change some part of script to adjust for AUTO1111, basic method is not changed.
 
-
-
 # Recent Update
 
+- 2023/01/12: Add some function
+  - Save as half
+  - Save as safetensors
+  - Select of "Skip/Reset CKIP `position_ids`"
+
 - 2022/12/25: Add new feature and new UI
-  
    - Read "README" [English](README_each.md)/[日本語](README_each.ja.md)
 
 # 
@@ -21,22 +23,31 @@
 ## Table of contents
 
 <!--ts-->
-   * [How to Install](#how-to-install)
-   * [How to use](#how-to-use)
-      * [Select `model_A` and `model_B`, and input `Output model name`](#select-model_a-and-model_b-and-input-output-model-name)
-      * [Set merge ratio for each block of U-Net](#set-merge-ratio-for-each-block-of-u-net)
-      * [Setting values](#setting-values)
-      * [Other settings](other-settings)
-   * [Other function](#other-function)
-      * [Save Merge Log](#save-merge-log)
-   * [Sample/Example](#sampleexample)
-      * [result (x/y)](#result-xy)
-      * [後述1: weight1](#%E5%BE%8C%E8%BF%B01-weight1)
-      * [後述2: weight2](#%E5%BE%8C%E8%BF%B02-weight2)
-      * [Preset's grids](#presets-grids)
-         * [Examples of Sigmoid-like Functions](#examples-of-sigmoid-like-functions)
-   * [Special Thanks](#special-thanks)
-<!--te-->
+
+* [How to Install](#how-to-install)
+
+* [How to use](#how-to-use)
+  
+   * [Select `model_A` and `model_B`, and input `Output model name`](#select-model_a-and-model_b-and-input-output-model-name)
+   * [Set merge ratio for each block of U-Net](#set-merge-ratio-for-each-block-of-u-net)
+   * [Setting values](#setting-values)
+   * [Other settings](other-settings)
+
+* [Other function](#other-function)
+  
+   * [Save Merge Log](#save-merge-log)
+
+* [Sample/Example](#sampleexample)
+  
+   * [result (x/y)](#result-xy)
+   * [後述1: weight1](#%E5%BE%8C%E8%BF%B01-weight1)
+   * [後述2: weight2](#%E5%BE%8C%E8%BF%B02-weight2)
+   * [Preset's grids](#presets-grids)
+      * [Examples of Sigmoid-like Functions](#examples-of-sigmoid-like-functions)
+
+* [Special Thanks](#special-thanks)
+  
+  <!--te-->
 
 ## How to Install
 
@@ -78,9 +89,11 @@
   
    - Weights must have 25 values and comma separated
 
-### Setting values
+## Setting values
 
 ![](misc/bw05.png)
+
+### base_alpha
 
 - set "base_alpha"
 
@@ -97,6 +110,27 @@
 | Allow overwrite output-model | Check true, if allow overwrite model file which has same name. |
 
 - Merged output is saved in normal "Model" folder.
+
+### Save as half / safetensors
+
+![](misc/bw09.png)
+
+- Settings about save
+  
+   - "Save as half" mean float16
+  
+   - "Save as safetensors". If you set your output file ext as `.safetensors`, automaticaly saved as safetensors with/without this setting.
+
+### Skip/Reset CKIP `position_ids`key value
+
+![](misc/bw10.png)
+
+- In this function, you can select treatment of `position_ids` value in CLIP.
+- Values in this key controls matching of your prompt and embeddings.
+- I've try to found the cause of 'Some model ignore No.1 token(word)' problem, and write some report about that. (https://note.com/bbcmc/n/n12c05bf109cc)
+- Arenatemp already have spectation of inside of models, and published Extension to fix this CLIP key problem. See also,
+   - [stable-diffusion-webui-model-toolkit](https://github.com/arenatemp/stable-diffusion-webui-model-toolkit)
+- MBW is also affected by this problem, because some model may (potensialy) have this issue, and causes/transfer some trouble to merged result model.
 
 ## Other function
 

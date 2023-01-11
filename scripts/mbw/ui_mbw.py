@@ -17,11 +17,11 @@ def on_ui_tabs():
     with gr.Column():
         with gr.Row():
             with gr.Column(variant="panel"):
+                html_output_block_weight_info = gr.HTML()
                 with gr.Row():
                     btn_do_merge_block_weighted = gr.Button(value="Run Merge", variant="primary")
                     btn_clear_weight = gr.Button(value="Clear values")
                     btn_reload_checkpoint_mbw = gr.Button(value="Reload checkpoint")
-                html_output_block_weight_info = gr.HTML()
             with gr.Column():
                 dd_preset_weight = gr.Dropdown(label="Preset Weights", choices=presetWeights.get_preset_name_list())
                 txt_block_weight = gr.Text(label="Weight values", placeholder="Put weight sets. float number x 25")
@@ -32,10 +32,11 @@ def on_ui_tabs():
                     chk_allow_overwrite = gr.Checkbox(label="Allow overwrite output-model", value=False)
                 with gr.Row():
                     with gr.Column(scale=3):
-                        chk_save_as_half = gr.Checkbox(label="Save as half", value=False)
-                        chk_save_as_safetensors = gr.Checkbox(label="Save as safetensors", value=False)
+                        with gr.Row():
+                            chk_save_as_half = gr.Checkbox(label="Save as half", value=False)
+                            chk_save_as_safetensors = gr.Checkbox(label="Save as safetensors", value=False)
                     with gr.Column(scale=4):
-                        radio_position_ids = gr.Radio(label="Skip/Reset CLIP position_ids", choices=["None", "Skip", "Force Reset"], value="Skip", type="index")
+                        radio_position_ids = gr.Radio(label="Skip/Reset CLIP position_ids", choices=["None", "Skip", "Force Reset"], value="None", type="index")
         with gr.Row():
             model_A = gr.Dropdown(label="Model A", choices=sd_models.checkpoint_tiles())
             model_B = gr.Dropdown(label="Model B", choices=sd_models.checkpoint_tiles())
