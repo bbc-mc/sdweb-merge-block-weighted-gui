@@ -172,7 +172,12 @@ def on_ui_tabs():
             )
 
         if result:
-            ret_html = "merged.<br>" + f"{model_A}<br>" + f"{model_B}<br>" + f"{model_O}<br>" + f"{_weights}<br>"
+            ret_html = "merged.<br>" \
+                + f"{model_A}<br>" \
+                + f"{model_B}<br>" \
+                + f"{model_O}<br>" \
+                + f"base_alpha={sl_base_alpha}<br>" \
+                + f"Weight_values={_weights}<br>"
             print("merged.")
         else:
             ret_html = ret_message

@@ -101,16 +101,16 @@ def merge(weight_A:list, weight_B:list, model_0, model_1, device="cpu", base_alp
 
             if KEY_POSITION_IDS in key:
                 if skip_position_ids == 1:
-                    print(f"  modelA: skip 'position_ids' : {theta_0[KEY_POSITION_IDS].dtype}")
+                    print(f"  modelA: skip 'position_ids': dtype:{theta_0[KEY_POSITION_IDS].dtype}")
                     dprint(f"{theta_0[KEY_POSITION_IDS]}", verbose)
                     continue
                 elif skip_position_ids == 2:
-                    theta_0[key] = torch.tensor([[range(77)]], dtype=torch.int64)
-                    print(f"  modelA: reset 'position_ids': {theta_0[KEY_POSITION_IDS].dtype}")
+                    theta_0[key] = torch.tensor([list(range(77))], dtype=torch.int64)
+                    print(f"  modelA: reset 'position_ids': dtype:{theta_0[KEY_POSITION_IDS].dtype}")
                     dprint(f"{theta_0[KEY_POSITION_IDS]}", verbose)
                     continue
                 else:
-                    print(f"  modelA: key found. do nothing : {skip_position_ids}")
+                    print(f"  modelA: key found. do nothing: dtype:{theta_0[KEY_POSITION_IDS].dtype}")
 
             dprint(f"  key : {key}", verbose)
 
@@ -174,7 +174,7 @@ def merge(weight_A:list, weight_B:list, model_0, model_1, device="cpu", base_alp
                     dprint(f"{theta_0[KEY_POSITION_IDS]}", verbose)
                     continue
                 elif skip_position_ids == 2:
-                    theta_0[key] = torch.tensor([[range(77)]], dtype=torch.int64)
+                    theta_0[key] = torch.tensor([list(range(77))], dtype=torch.int64)
                     print(f"  modelB: reset 'position_ids': {theta_0[KEY_POSITION_IDS].dtype}")
                     dprint(f"{theta_0[KEY_POSITION_IDS]}", verbose)
                     continue

@@ -7,11 +7,14 @@
 # Recent Update
 
 - 2023/01/12: Add some function
-  - Save as half
-  - Save as safetensors
-  - Select of "Skip/Reset CKIP `position_ids`"
+  
+   - Save as half
+   - Save as safetensors
+   - Select of "Skip/Reset CKIP `position_ids`"
+      - [[調査] Smile Test: Elysium_Anime_V3 問題を調べる #3｜bbcmc｜note](https://note.com/bbcmc/n/n12c05bf109cc)
 
 - 2022/12/25: Add new feature and new UI
+  
    - Read "README" [English](README_each.md)/[日本語](README_each.ja.md)
 
 # 
@@ -31,7 +34,10 @@
    * [Select `model_A` and `model_B`, and input `Output model name`](#select-model_a-and-model_b-and-input-output-model-name)
    * [Set merge ratio for each block of U-Net](#set-merge-ratio-for-each-block-of-u-net)
    * [Setting values](#setting-values)
-   * [Other settings](other-settings)
+      * [base_alpha](#base_alpha)
+      * [Other settings](#other-settings)
+      * [Save as half / safetensors](#save-as-half--safetensors) 
+      * [Skip/Reset CLIP `position_ids`key value](#skipreset-clip-position-ids-key-value)
 
 * [Other function](#other-function)
   
@@ -42,8 +48,10 @@
    * [result (x/y)](#result-xy)
    * [後述1: weight1](#%E5%BE%8C%E8%BF%B01-weight1)
    * [後述2: weight2](#%E5%BE%8C%E8%BF%B02-weight2)
-   * [Preset's grids](#presets-grids)
-      * [Examples of Sigmoid-like Functions](#examples-of-sigmoid-like-functions)
+
+* [Preset's grids](#presets-grids)
+  
+   * [Examples of Sigmoid-like Functions](#examples-of-sigmoid-like-functions)
 
 * [Special Thanks](#special-thanks)
   
@@ -121,16 +129,22 @@
   
    - "Save as safetensors". If you set your output file ext as `.safetensors`, automaticaly saved as safetensors with/without this setting.
 
-### Skip/Reset CKIP `position_ids`key value
+### Skip/Reset CLIP `position_ids`key value
 
 ![](misc/bw10.png)
 
 - In this function, you can select treatment of `position_ids` value in CLIP.
 - Values in this key controls matching of your prompt and embeddings.
-- I've try to found the cause of 'Some model ignore No.1 token(word)' problem, and write some report about that. (https://note.com/bbcmc/n/n12c05bf109cc)
+- I've try to found the cause of 'Some model ignore No.1 token(word)' problem, and write some report about that. ([[調査] Smile Test: Elysium_Anime_V3 問題を調べる #3｜bbcmc｜note](https://note.com/bbcmc/n/n12c05bf109cc))
 - Arenatemp already have spectation of inside of models, and published Extension to fix this CLIP key problem. See also,
    - [stable-diffusion-webui-model-toolkit](https://github.com/arenatemp/stable-diffusion-webui-model-toolkit)
 - MBW is also affected by this problem, because some model may (potensialy) have this issue, and causes/transfer some trouble to merged result model.
+
+| Select | Effect                                                          |
+| ------ | --------------------------------------------------------------- |
+| None   | do nothing about key. normal merge                              |
+| Skip   | Skip `position_ids` key to eject effect. Value of Model A used. |
+| Reset  | Replace `position_ids` values to tensor([[range(77)]])          |
 
 ## Other function
 
@@ -200,7 +214,7 @@
 0.0833333333, 0
 ```
 
-### Preset's grids
+## Preset's grids
 
 <p align="center">
 <img src="misc/preset_grid/GRAD_V.PNG" width="350" /> <img src="misc/preset_grid/GRAD_A.PNG" width="350" /> <img src="misc/preset_grid/FLAT_25.PNG" width="350" /> <img src="misc/preset_grid/FLAT_75.PNG" width="350" /> <img src="misc/preset_grid/WRAP08.PNG" width="350" /> <img src="misc/preset_grid/WRAP12.PNG" width="350" /> <img src="misc/preset_grid/WRAP14.PNG" width="350" /> <img src="misc/preset_grid/WRAP16.PNG" width="350" /> <img src="misc/preset_grid/MID12_50.PNG" width="350" /> <img src="misc/preset_grid/OUT07.PNG" width="350" /> <img src="misc/preset_grid/OUT12.PNG" width="350" /> <img src="misc/preset_grid/OUT12_5.PNG" width="350" /> <img src="misc/preset_grid/RING08_SOFT.PNG" width="350" /> <img src="misc/preset_grid/RING08_5.PNG" width="350" /> <img src="misc/preset_grid/RING10_5.PNG" width="350" /> <img src="misc/preset_grid/RING10_3.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP.PNG" width="350" /> <img src="misc/preset_grid/REVERSE_SMOOTHSTEP.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEPx2.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEPx2.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEPx3.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEPx3.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEPx4.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEPx4.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP_2.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEP_2.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP_3.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEP_3.PNG" width="350" /> <img src="misc/preset_grid/SMOOTHSTEP_4.PNG" width="350" /> <img src="misc/preset_grid/R_SMOOTHSTEP_4.PNG" width="350" /> <img src="misc/preset_grid/COSINE.PNG" width="350" /> <img src="misc/preset_grid/REVERSE_COSINE.PNG" width="350" /> <img src="misc/preset_grid/TRUE_CUBIC_HERMITE.PNG" width="350" /> <img src="misc/preset_grid/TRUE_REVERSE_CUBIC_HERMITE.PNG" width="350" /> <img src="misc/preset_grid/FAKE_CUBIC_HERMITE.PNG" width="350" /> <img src="misc/preset_grid/FAKE_REVERSE_CUBIC_HERMITE.PNG" width="350" />
@@ -208,25 +222,21 @@
 
 #### Examples of Sigmoid-like Functions
 
-`a∈{0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24}`
-
-`S=100/24` - Steps
-
+```
+a∈{0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24}
+S=100/24` - Steps
 `𝝅` - number Pi
-
 `Q=2` - Ratio
+```
 
-`Cosine` <=>   `x=a(S)100` & `y=(1-COS((x-1)*𝝅))/2`
-
-`Smoothstep`   <=>   `x=a(S)100` & `y=3x^2-2x^3`
-
-`Smoothstep*Q` <=>   `x=a(S)100` & ( when `x∈<0;0.5>` , `y=Q(3x^2-2x^3)` ∨ when `x∈(0.5;1>` , `y=2-Q(3x^2-2x^3` )
-
-`Smoothstep\Q` <=>   ( when `a<=12` , `x=a(S/Q)100` ∨ when `12<a<=24` , `x=(24-a)(S/Q)100` )  &  `y=3x^2-2x^3`
-
-`True_Cubic_Hermite` <=>   `x=a(S)100` & `y=(2*x₁^3-3*x₁^2+1)*(x₁-xₙ₋₁)+(x₁^3-2*x₁^2+x₁)*S+(-2*x₁^3+3*x₁^2)*(x₁^3-x₁^2)*S`
-
-`Fake_Cubic_Hermite` <=>   `x=a(S)100` & `y=(x^3-2*x^2+x)*S+(-2*x^3+3*x^2)*(x^3-x^2)*S`
+| name                 | equation                                                                                        |
+| -------------------- | ----------------------------------------------------------------------------------------------- |
+| `Cosine`             | `x=a(S)100` & `y=(1-COS((x-1)*𝝅))/2`                                                           |
+| `Smoothstep`         | `x=a(S)100` & `y=3x^2-2x^3`                                                                     |
+| `Smoothstep*Q`       | `x=a(S)100` & ( when `x∈<0;0.5>` , `y=Q(3x^2-2x^3)` ∨ when `x∈(0.5;1>` , `y=2-Q(3x^2-2x^3` )    |
+| `Smoothstep\Q`       | ( when `a<=12` , `x=a(S/Q)100` ∨ when `12<a<=24` , `x=(24-a)(S/Q)100` )  &  `y=3x^2-2x^3`       |
+| `True_Cubic_Hermite` | `x=a(S)100` & `y=(2*x₁^3-3*x₁^2+1)*(x₁-xₙ₋₁)+(x₁^3-2*x₁^2+x₁)*S+(-2*x₁^3+3*x₁^2)*(x₁^3-x₁^2)*S` |
+| `Fake_Cubic_Hermite` | `x=a(S)100` & `y=(x^3-2*x^2+x)*S+(-2*x^3+3*x^2)*(x^3-x^2)*S`                                    |
 
 ## Special Thanks
 
