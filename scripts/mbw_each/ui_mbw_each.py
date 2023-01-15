@@ -4,6 +4,11 @@ import re
 
 from modules import sd_models, shared
 from tqdm import tqdm
+try:
+    from modules import hashes
+    from modules.sd_models import CheckpointInfo
+except:
+    pass
 
 from scripts.mbw_each.merge_block_weighted_mod import merge
 from scripts.mbw_util.preset_weights import PresetWeights
@@ -397,14 +402,38 @@ def on_ui_tabs():
 
         # save log to history.tsv
         sd_models.list_models()
+        model_A_info = sd_models.get_closet_checkpoint_match(model_0)
+        model_B_info = sd_models.get_closet_checkpoint_match(model_1)
         model_O_info = sd_models.get_closet_checkpoint_match(os.path.basename(output_file))
-        model_O_hash = "" if model_O_info is None else model_O_info.hash
-        _names = presetWeights.find_names_by_weight(weight_A)
+        if hasattr(model_O_info, "sha256") and model_O_info.sha256 is None:
+            model_O_info:CheckpointInfo = model_O_info
+            model_O_info.sha256 = hashes.sha256(model_O_info.filename, "checkpoint/" + model_O_info.title)
+        _names = presetWeights.find_names_by_weight(weight_B)
         if _names and len(_names) > 0:
             weight_name = _names[0]
         else:
             weight_name = ""
-        mergeHistory.add_history(model_0, model_1, model_O, model_O_hash, base_alpha, weight_A, weight_B, weight_name)
+
+        def model_name(model_info):
+            return model_info.name if hasattr(model_info, "name") else model_info.title
+        def model_sha256(model_info):
+            return model_info.sha256 if hasattr(model_info, "sha256") else ""
+        mergeHistory.add_history(
+                model_name(model_A_info),
+                model_A_info.hash,
+                model_sha256(model_A_info),
+                model_name(model_B_info),
+                model_B_info.hash,
+                model_sha256(model_B_info),
+                model_name(model_O_info),
+                model_O_info.hash,
+                model_sha256(model_O_info),
+                base_alpha,
+                weight_A,
+                weight_B,
+                weight_name
+                )
+
         return ret_html
 
     btn_clear_weighted.click(
