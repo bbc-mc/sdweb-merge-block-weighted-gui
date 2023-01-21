@@ -3,11 +3,12 @@ import os
 import re
 
 from modules import sd_models, shared
-from tqdm import tqdm
+
 try:
     from modules import hashes
     from modules.sd_models import CheckpointInfo
 except:
+    print("could not import hashes or CheckpointInfo from SDwebui")
     pass
 
 from scripts.mbw_each.merge_block_weighted_mod import merge
@@ -23,58 +24,256 @@ def on_ui_tabs():
         with gr.Row():
             with gr.Column(variant="panel"):
                 with gr.Row():
-                    txt_multi_process_cmd = gr.TextArea(label="Multi Proc Cmd", placeholder="Keep empty if dont use.")
+                    txt_multi_process_cmd = gr.TextArea(
+                        label="Multi Proc Cmd", placeholder="Keep empty if dont use."
+                    )
                 html_output_block_weight_info = gr.HTML()
                 with gr.Row():
-                    btn_do_merge_block_weighted = gr.Button(value="Run Merge", variant="primary")
+                    btn_do_merge_block_weighted = gr.Button(
+                        value="Run Merge", variant="primary"
+                    )
                     btn_clear_weighted = gr.Button(value="Clear values")
                     btn_reload_checkpoint_mbw = gr.Button(value="Reload checkpoint")
             with gr.Column():
-                dd_preset_weight = gr.Dropdown(label="Preset_Weights", choices=presetWeights.get_preset_name_list())
-                txt_block_weight = gr.Text(label="Weight_values", placeholder="Put weight sets. float number x 25")
-                btn_apply_block_weithg_from_txt = gr.Button(value="Apply block weight from text", variant="primary")
+                dd_preset_weight = gr.Dropdown(
+                    label="Preset_Weights", choices=presetWeights.get_preset_name_list()
+                )
+                txt_block_weight = gr.Text(
+                    label="Weight_values",
+                    placeholder="Put weight sets. float number x 25",
+                )
+                btn_apply_block_weithg_from_txt = gr.Button(
+                    value="Apply block weight from text", variant="primary"
+                )
                 with gr.Row():
-                    sl_base_alpha = gr.Slider(label="base_alpha", minimum=0, maximum=1, step=0.01, value=0)
-                    chk_verbose_mbw = gr.Checkbox(label="verbose console output", value=False)
-                    chk_allow_overwrite = gr.Checkbox(label="Allow overwrite output-model", value=False)
+                    sl_base_alpha = gr.Slider(
+                        label="base_alpha", minimum=0, maximum=1, step=0.01, value=0
+                    )
+                    chk_verbose_mbw = gr.Checkbox(
+                        label="verbose console output", value=False
+                    )
+                    chk_allow_overwrite = gr.Checkbox(
+                        label="Allow overwrite output-model", value=False
+                    )
                 with gr.Row():
                     with gr.Column(scale=3):
                         with gr.Row():
-                            chk_save_as_half = gr.Checkbox(label="Save as half", value=False)
-                            chk_save_as_safetensors = gr.Checkbox(label="Save as safetensors", value=False)
+                            chk_save_as_half = gr.Checkbox(
+                                label="Save as half", value=False
+                            )
+                            chk_save_as_safetensors = gr.Checkbox(
+                                label="Save as safetensors", value=False
+                            )
                     with gr.Column(scale=4):
-                        radio_position_ids = gr.Radio(label="Skip/Reset CLIP position_ids", choices=["None", "Skip", "Force Reset"], value="None", type="index")
+                        radio_position_ids = gr.Radio(
+                            label="Skip/Reset CLIP position_ids",
+                            choices=["None", "Skip", "Force Reset"],
+                            value="None",
+                            type="index",
+                        )
         with gr.Row():
-            dd_model_A = gr.Dropdown(label="Model_A", choices=sd_models.checkpoint_tiles())
-            dd_model_B = gr.Dropdown(label="Model_B", choices=sd_models.checkpoint_tiles())
+            dd_model_A = gr.Dropdown(
+                label="Model_A", choices=sd_models.checkpoint_tiles()
+            )
+            dd_model_B = gr.Dropdown(
+                label="Model_B", choices=sd_models.checkpoint_tiles()
+            )
             txt_model_O = gr.Text(label="(O)Output Model Name")
         with gr.Row():
             with gr.Column():
-                sl_IN_A_00 = gr.Slider(label="IN_A_00", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_A_00")
-                sl_IN_A_01 = gr.Slider(label="IN_A_01", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_A_01")
-                sl_IN_A_02 = gr.Slider(label="IN_A_02", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_A_02")
-                sl_IN_A_03 = gr.Slider(label="IN_A_03", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_A_03")
-                sl_IN_A_04 = gr.Slider(label="IN_A_04", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_A_04")
-                sl_IN_A_05 = gr.Slider(label="IN_A_05", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_A_05")
-                sl_IN_A_06 = gr.Slider(label="IN_A_06", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_A_06")
-                sl_IN_A_07 = gr.Slider(label="IN_A_07", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_A_07")
-                sl_IN_A_08 = gr.Slider(label="IN_A_08", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_A_08")
-                sl_IN_A_09 = gr.Slider(label="IN_A_09", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_A_09")
-                sl_IN_A_10 = gr.Slider(label="IN_A_10", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_A_10")
-                sl_IN_A_11 = gr.Slider(label="IN_A_11", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_A_11")
+                sl_IN_A_00 = gr.Slider(
+                    label="IN_A_00",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_A_00",
+                )
+                sl_IN_A_01 = gr.Slider(
+                    label="IN_A_01",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_A_01",
+                )
+                sl_IN_A_02 = gr.Slider(
+                    label="IN_A_02",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_A_02",
+                )
+                sl_IN_A_03 = gr.Slider(
+                    label="IN_A_03",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_A_03",
+                )
+                sl_IN_A_04 = gr.Slider(
+                    label="IN_A_04",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_A_04",
+                )
+                sl_IN_A_05 = gr.Slider(
+                    label="IN_A_05",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_A_05",
+                )
+                sl_IN_A_06 = gr.Slider(
+                    label="IN_A_06",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_A_06",
+                )
+                sl_IN_A_07 = gr.Slider(
+                    label="IN_A_07",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_A_07",
+                )
+                sl_IN_A_08 = gr.Slider(
+                    label="IN_A_08",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_A_08",
+                )
+                sl_IN_A_09 = gr.Slider(
+                    label="IN_A_09",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_A_09",
+                )
+                sl_IN_A_10 = gr.Slider(
+                    label="IN_A_10",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_A_10",
+                )
+                sl_IN_A_11 = gr.Slider(
+                    label="IN_A_11",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_A_11",
+                )
             with gr.Column():
-                sl_IN_B_00 = gr.Slider(label="IN_B_00", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_B_00")
-                sl_IN_B_01 = gr.Slider(label="IN_B_01", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_B_01")
-                sl_IN_B_02 = gr.Slider(label="IN_B_02", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_B_02")
-                sl_IN_B_03 = gr.Slider(label="IN_B_03", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_B_03")
-                sl_IN_B_04 = gr.Slider(label="IN_B_04", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_B_04")
-                sl_IN_B_05 = gr.Slider(label="IN_B_05", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_B_05")
-                sl_IN_B_06 = gr.Slider(label="IN_B_06", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_B_06")
-                sl_IN_B_07 = gr.Slider(label="IN_B_07", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_B_07")
-                sl_IN_B_08 = gr.Slider(label="IN_B_08", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_B_08")
-                sl_IN_B_09 = gr.Slider(label="IN_B_09", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_B_09")
-                sl_IN_B_10 = gr.Slider(label="IN_B_10", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_B_10")
-                sl_IN_B_11 = gr.Slider(label="IN_B_11", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_IN_B_11")
+                sl_IN_B_00 = gr.Slider(
+                    label="IN_B_00",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_B_00",
+                )
+                sl_IN_B_01 = gr.Slider(
+                    label="IN_B_01",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_B_01",
+                )
+                sl_IN_B_02 = gr.Slider(
+                    label="IN_B_02",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_B_02",
+                )
+                sl_IN_B_03 = gr.Slider(
+                    label="IN_B_03",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_B_03",
+                )
+                sl_IN_B_04 = gr.Slider(
+                    label="IN_B_04",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_B_04",
+                )
+                sl_IN_B_05 = gr.Slider(
+                    label="IN_B_05",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_B_05",
+                )
+                sl_IN_B_06 = gr.Slider(
+                    label="IN_B_06",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_B_06",
+                )
+                sl_IN_B_07 = gr.Slider(
+                    label="IN_B_07",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_B_07",
+                )
+                sl_IN_B_08 = gr.Slider(
+                    label="IN_B_08",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_B_08",
+                )
+                sl_IN_B_09 = gr.Slider(
+                    label="IN_B_09",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_B_09",
+                )
+                sl_IN_B_10 = gr.Slider(
+                    label="IN_B_10",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_B_10",
+                )
+                sl_IN_B_11 = gr.Slider(
+                    label="IN_B_11",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_IN_B_11",
+                )
             with gr.Column():
                 gr.Slider(visible=False)
                 gr.Slider(visible=False)
@@ -87,7 +286,14 @@ def on_ui_tabs():
                 gr.Slider(visible=False)
                 gr.Slider(visible=False)
                 gr.Slider(visible=False)
-                sl_M_A_00 = gr.Slider(label="M_A_00", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_M_A_00")
+                sl_M_A_00 = gr.Slider(
+                    label="M_A_00",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_M_A_00",
+                )
             with gr.Column():
                 gr.Slider(visible=False)
                 gr.Slider(visible=False)
@@ -100,33 +306,208 @@ def on_ui_tabs():
                 gr.Slider(visible=False)
                 gr.Slider(visible=False)
                 gr.Slider(visible=False)
-                sl_M_B_00 = gr.Slider(label="M_B_00", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_M_B_00")
+                sl_M_B_00 = gr.Slider(
+                    label="M_B_00",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_M_B_00",
+                )
             with gr.Column():
-                sl_OUT_A_11 = gr.Slider(label="OUT_A_11", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_A_11")
-                sl_OUT_A_10 = gr.Slider(label="OUT_A_10", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_A_10")
-                sl_OUT_A_09 = gr.Slider(label="OUT_A_09", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_A_09")
-                sl_OUT_A_08 = gr.Slider(label="OUT_A_08", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_A_08")
-                sl_OUT_A_07 = gr.Slider(label="OUT_A_07", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_A_07")
-                sl_OUT_A_06 = gr.Slider(label="OUT_A_06", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_A_06")
-                sl_OUT_A_05 = gr.Slider(label="OUT_A_05", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_A_05")
-                sl_OUT_A_04 = gr.Slider(label="OUT_A_04", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_A_04")
-                sl_OUT_A_03 = gr.Slider(label="OUT_A_03", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_A_03")
-                sl_OUT_A_02 = gr.Slider(label="OUT_A_02", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_A_02")
-                sl_OUT_A_01 = gr.Slider(label="OUT_A_01", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_A_01")
-                sl_OUT_A_00 = gr.Slider(label="OUT_A_00", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_A_00")
+                sl_OUT_A_11 = gr.Slider(
+                    label="OUT_A_11",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_A_11",
+                )
+                sl_OUT_A_10 = gr.Slider(
+                    label="OUT_A_10",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_A_10",
+                )
+                sl_OUT_A_09 = gr.Slider(
+                    label="OUT_A_09",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_A_09",
+                )
+                sl_OUT_A_08 = gr.Slider(
+                    label="OUT_A_08",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_A_08",
+                )
+                sl_OUT_A_07 = gr.Slider(
+                    label="OUT_A_07",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_A_07",
+                )
+                sl_OUT_A_06 = gr.Slider(
+                    label="OUT_A_06",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_A_06",
+                )
+                sl_OUT_A_05 = gr.Slider(
+                    label="OUT_A_05",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_A_05",
+                )
+                sl_OUT_A_04 = gr.Slider(
+                    label="OUT_A_04",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_A_04",
+                )
+                sl_OUT_A_03 = gr.Slider(
+                    label="OUT_A_03",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_A_03",
+                )
+                sl_OUT_A_02 = gr.Slider(
+                    label="OUT_A_02",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_A_02",
+                )
+                sl_OUT_A_01 = gr.Slider(
+                    label="OUT_A_01",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_A_01",
+                )
+                sl_OUT_A_00 = gr.Slider(
+                    label="OUT_A_00",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_A_00",
+                )
             with gr.Column():
-                sl_OUT_B_11 = gr.Slider(label="OUT_B_11", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_B_11")
-                sl_OUT_B_10 = gr.Slider(label="OUT_B_10", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_B_10")
-                sl_OUT_B_09 = gr.Slider(label="OUT_B_09", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_B_09")
-                sl_OUT_B_08 = gr.Slider(label="OUT_B_08", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_B_08")
-                sl_OUT_B_07 = gr.Slider(label="OUT_B_07", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_B_07")
-                sl_OUT_B_06 = gr.Slider(label="OUT_B_06", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_B_06")
-                sl_OUT_B_05 = gr.Slider(label="OUT_B_05", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_B_05")
-                sl_OUT_B_04 = gr.Slider(label="OUT_B_04", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_B_04")
-                sl_OUT_B_03 = gr.Slider(label="OUT_B_03", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_B_03")
-                sl_OUT_B_02 = gr.Slider(label="OUT_B_02", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_B_02")
-                sl_OUT_B_01 = gr.Slider(label="OUT_B_01", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_B_01")
-                sl_OUT_B_00 = gr.Slider(label="OUT_B_00", minimum=0, maximum=1, step=0.01, value=0.5, elem_id="sl_OUT_B_00")
+                sl_OUT_B_11 = gr.Slider(
+                    label="OUT_B_11",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_B_11",
+                )
+                sl_OUT_B_10 = gr.Slider(
+                    label="OUT_B_10",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_B_10",
+                )
+                sl_OUT_B_09 = gr.Slider(
+                    label="OUT_B_09",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_B_09",
+                )
+                sl_OUT_B_08 = gr.Slider(
+                    label="OUT_B_08",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_B_08",
+                )
+                sl_OUT_B_07 = gr.Slider(
+                    label="OUT_B_07",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_B_07",
+                )
+                sl_OUT_B_06 = gr.Slider(
+                    label="OUT_B_06",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_B_06",
+                )
+                sl_OUT_B_05 = gr.Slider(
+                    label="OUT_B_05",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_B_05",
+                )
+                sl_OUT_B_04 = gr.Slider(
+                    label="OUT_B_04",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_B_04",
+                )
+                sl_OUT_B_03 = gr.Slider(
+                    label="OUT_B_03",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_B_03",
+                )
+                sl_OUT_B_02 = gr.Slider(
+                    label="OUT_B_02",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_B_02",
+                )
+                sl_OUT_B_01 = gr.Slider(
+                    label="OUT_B_01",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_B_01",
+                )
+                sl_OUT_B_00 = gr.Slider(
+                    label="OUT_B_00",
+                    minimum=0,
+                    maximum=1,
+                    step=0.01,
+                    value=0.5,
+                    elem_id="sl_OUT_B_00",
+                )
 
     # Footer
     gr.HTML(
@@ -140,59 +521,196 @@ def on_ui_tabs():
     )
 
     sl_A_IN = [
-        sl_IN_A_00, sl_IN_A_01, sl_IN_A_02, sl_IN_A_03, sl_IN_A_04, sl_IN_A_05,
-        sl_IN_A_06, sl_IN_A_07, sl_IN_A_08, sl_IN_A_09, sl_IN_A_10, sl_IN_A_11]
+        sl_IN_A_00,
+        sl_IN_A_01,
+        sl_IN_A_02,
+        sl_IN_A_03,
+        sl_IN_A_04,
+        sl_IN_A_05,
+        sl_IN_A_06,
+        sl_IN_A_07,
+        sl_IN_A_08,
+        sl_IN_A_09,
+        sl_IN_A_10,
+        sl_IN_A_11,
+    ]
     sl_A_MID = [sl_M_A_00]
     sl_A_OUT = [
-        sl_OUT_A_00, sl_OUT_A_01, sl_OUT_A_02, sl_OUT_A_03, sl_OUT_A_04, sl_OUT_A_05,
-        sl_OUT_A_06, sl_OUT_A_07, sl_OUT_A_08, sl_OUT_A_09, sl_OUT_A_10, sl_OUT_A_11]
+        sl_OUT_A_00,
+        sl_OUT_A_01,
+        sl_OUT_A_02,
+        sl_OUT_A_03,
+        sl_OUT_A_04,
+        sl_OUT_A_05,
+        sl_OUT_A_06,
+        sl_OUT_A_07,
+        sl_OUT_A_08,
+        sl_OUT_A_09,
+        sl_OUT_A_10,
+        sl_OUT_A_11,
+    ]
 
     sl_B_IN = [
-        sl_IN_B_00, sl_IN_B_01, sl_IN_B_02, sl_IN_B_03, sl_IN_B_04, sl_IN_B_05,
-        sl_IN_B_06, sl_IN_B_07, sl_IN_B_08, sl_IN_B_09, sl_IN_B_10, sl_IN_B_11]
+        sl_IN_B_00,
+        sl_IN_B_01,
+        sl_IN_B_02,
+        sl_IN_B_03,
+        sl_IN_B_04,
+        sl_IN_B_05,
+        sl_IN_B_06,
+        sl_IN_B_07,
+        sl_IN_B_08,
+        sl_IN_B_09,
+        sl_IN_B_10,
+        sl_IN_B_11,
+    ]
     sl_B_MID = [sl_M_B_00]
     sl_B_OUT = [
-        sl_OUT_B_00, sl_OUT_B_01, sl_OUT_B_02, sl_OUT_B_03, sl_OUT_B_04, sl_OUT_B_05,
-        sl_OUT_B_06, sl_OUT_B_07, sl_OUT_B_08, sl_OUT_B_09, sl_OUT_B_10, sl_OUT_B_11]
-
+        sl_OUT_B_00,
+        sl_OUT_B_01,
+        sl_OUT_B_02,
+        sl_OUT_B_03,
+        sl_OUT_B_04,
+        sl_OUT_B_05,
+        sl_OUT_B_06,
+        sl_OUT_B_07,
+        sl_OUT_B_08,
+        sl_OUT_B_09,
+        sl_OUT_B_10,
+        sl_OUT_B_11,
+    ]
 
     # Events
     def onclick_btn_do_merge_block_weighted(
-        dd_model_A, dd_model_B, txt_multi_process_cmd,
-        sl_IN_A_00, sl_IN_A_01, sl_IN_A_02, sl_IN_A_03, sl_IN_A_04, sl_IN_A_05,
-        sl_IN_A_06, sl_IN_A_07, sl_IN_A_08, sl_IN_A_09, sl_IN_A_10, sl_IN_A_11,
+        dd_model_A,
+        dd_model_B,
+        txt_multi_process_cmd,
+        sl_IN_A_00,
+        sl_IN_A_01,
+        sl_IN_A_02,
+        sl_IN_A_03,
+        sl_IN_A_04,
+        sl_IN_A_05,
+        sl_IN_A_06,
+        sl_IN_A_07,
+        sl_IN_A_08,
+        sl_IN_A_09,
+        sl_IN_A_10,
+        sl_IN_A_11,
         sl_M_A_00,
-        sl_OUT_A_00, sl_OUT_A_01, sl_OUT_A_02, sl_OUT_A_03, sl_OUT_A_04, sl_OUT_A_05,
-        sl_OUT_A_06, sl_OUT_A_07, sl_OUT_A_08, sl_OUT_A_09, sl_OUT_A_10, sl_OUT_A_11,
-        sl_IN_B_00, sl_IN_B_01, sl_IN_B_02, sl_IN_B_03, sl_IN_B_04, sl_IN_B_05,
-        sl_IN_B_06, sl_IN_B_07, sl_IN_B_08, sl_IN_B_09, sl_IN_B_10, sl_IN_B_11,
+        sl_OUT_A_00,
+        sl_OUT_A_01,
+        sl_OUT_A_02,
+        sl_OUT_A_03,
+        sl_OUT_A_04,
+        sl_OUT_A_05,
+        sl_OUT_A_06,
+        sl_OUT_A_07,
+        sl_OUT_A_08,
+        sl_OUT_A_09,
+        sl_OUT_A_10,
+        sl_OUT_A_11,
+        sl_IN_B_00,
+        sl_IN_B_01,
+        sl_IN_B_02,
+        sl_IN_B_03,
+        sl_IN_B_04,
+        sl_IN_B_05,
+        sl_IN_B_06,
+        sl_IN_B_07,
+        sl_IN_B_08,
+        sl_IN_B_09,
+        sl_IN_B_10,
+        sl_IN_B_11,
         sl_M_B_00,
-        sl_OUT_B_00, sl_OUT_B_01, sl_OUT_B_02, sl_OUT_B_03, sl_OUT_B_04, sl_OUT_B_05,
-        sl_OUT_B_06, sl_OUT_B_07, sl_OUT_B_08, sl_OUT_B_09, sl_OUT_B_10, sl_OUT_B_11,
-        txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite,
-        chk_save_as_safetensors, chk_save_as_half,
-        radio_position_ids
+        sl_OUT_B_00,
+        sl_OUT_B_01,
+        sl_OUT_B_02,
+        sl_OUT_B_03,
+        sl_OUT_B_04,
+        sl_OUT_B_05,
+        sl_OUT_B_06,
+        sl_OUT_B_07,
+        sl_OUT_B_08,
+        sl_OUT_B_09,
+        sl_OUT_B_10,
+        sl_OUT_B_11,
+        txt_model_O,
+        sl_base_alpha,
+        chk_verbose_mbw,
+        chk_allow_overwrite,
+        chk_save_as_safetensors,
+        chk_save_as_half,
+        radio_position_ids,
     ):
         base_alpha = sl_base_alpha
         _weight_A = ",".join(
-            [str(x) for x in [
-                sl_IN_A_00, sl_IN_A_01, sl_IN_A_02, sl_IN_A_03, sl_IN_A_04, sl_IN_A_05,
-                sl_IN_A_06, sl_IN_A_07, sl_IN_A_08, sl_IN_A_09, sl_IN_A_10, sl_IN_A_11,
-                sl_M_A_00,
-                sl_OUT_A_00, sl_OUT_A_01, sl_OUT_A_02, sl_OUT_A_03, sl_OUT_A_04, sl_OUT_A_05,
-                sl_OUT_A_06, sl_OUT_A_07, sl_OUT_A_08, sl_OUT_A_09, sl_OUT_A_10, sl_OUT_A_11,
-            ]])
+            [
+                str(x)
+                for x in [
+                    sl_IN_A_00,
+                    sl_IN_A_01,
+                    sl_IN_A_02,
+                    sl_IN_A_03,
+                    sl_IN_A_04,
+                    sl_IN_A_05,
+                    sl_IN_A_06,
+                    sl_IN_A_07,
+                    sl_IN_A_08,
+                    sl_IN_A_09,
+                    sl_IN_A_10,
+                    sl_IN_A_11,
+                    sl_M_A_00,
+                    sl_OUT_A_00,
+                    sl_OUT_A_01,
+                    sl_OUT_A_02,
+                    sl_OUT_A_03,
+                    sl_OUT_A_04,
+                    sl_OUT_A_05,
+                    sl_OUT_A_06,
+                    sl_OUT_A_07,
+                    sl_OUT_A_08,
+                    sl_OUT_A_09,
+                    sl_OUT_A_10,
+                    sl_OUT_A_11,
+                ]
+            ]
+        )
         _weight_B = ",".join(
-            [str(x) for x in [
-                sl_IN_B_00, sl_IN_B_01, sl_IN_B_02, sl_IN_B_03, sl_IN_B_04, sl_IN_B_05,
-                sl_IN_B_06, sl_IN_B_07, sl_IN_B_08, sl_IN_B_09, sl_IN_B_10, sl_IN_B_11,
-                sl_M_B_00,
-                sl_OUT_B_00, sl_OUT_B_01, sl_OUT_B_02, sl_OUT_B_03, sl_OUT_B_04, sl_OUT_B_05,
-                sl_OUT_B_06, sl_OUT_B_07, sl_OUT_B_08, sl_OUT_B_09, sl_OUT_B_10, sl_OUT_B_11,
-            ]])
+            [
+                str(x)
+                for x in [
+                    sl_IN_B_00,
+                    sl_IN_B_01,
+                    sl_IN_B_02,
+                    sl_IN_B_03,
+                    sl_IN_B_04,
+                    sl_IN_B_05,
+                    sl_IN_B_06,
+                    sl_IN_B_07,
+                    sl_IN_B_08,
+                    sl_IN_B_09,
+                    sl_IN_B_10,
+                    sl_IN_B_11,
+                    sl_M_B_00,
+                    sl_OUT_B_00,
+                    sl_OUT_B_01,
+                    sl_OUT_B_02,
+                    sl_OUT_B_03,
+                    sl_OUT_B_04,
+                    sl_OUT_B_05,
+                    sl_OUT_B_06,
+                    sl_OUT_B_07,
+                    sl_OUT_B_08,
+                    sl_OUT_B_09,
+                    sl_OUT_B_10,
+                    sl_OUT_B_11,
+                ]
+            ]
+        )
 
         # debug output
-        print( "#### Merge Block Weighted : Each ####")
+        print("#### Merge Block Weighted : Each ####")
 
         if (not dd_model_A or not dd_model_B) and txt_multi_process_cmd == "":
             _err_msg = f"ERROR: model not found. [{dd_model_A}][{dd_model_B}]"
@@ -202,7 +720,7 @@ def on_ui_tabs():
         ret_html = ""
         if txt_multi_process_cmd != "":
             # need multi-merge
-            _lines = txt_multi_process_cmd.split('\n')
+            _lines = txt_multi_process_cmd.split("\n")
             print(f"check multi-merge. {len(_lines)} lines found.")
             for line_index, _line in enumerate(_lines):
                 if _line == "":
@@ -211,14 +729,19 @@ def on_ui_tabs():
                 _items = [x.strip() for x in _line.split(",") if x != ""]
                 if len(_items) > 0:
                     ret_html += _run_merge(
-                        weight_A=_weight_A, weight_B=_weight_B, model_0=dd_model_A, model_1=dd_model_B,
-                        allow_overwrite=chk_allow_overwrite, base_alpha=base_alpha, model_Output=txt_model_O,
+                        weight_A=_weight_A,
+                        weight_B=_weight_B,
+                        model_0=dd_model_A,
+                        model_1=dd_model_B,
+                        allow_overwrite=chk_allow_overwrite,
+                        base_alpha=base_alpha,
+                        model_Output=txt_model_O,
                         verbose=chk_verbose_mbw,
                         params=_items,
                         save_as_safetensors=chk_save_as_safetensors,
                         save_as_half=chk_save_as_half,
-                        skip_position_ids=radio_position_ids
-                        )
+                        skip_position_ids=radio_position_ids,
+                    )
                 else:
                     _ret = f"  multi-merge text found, but invalid params. skipped :[{_line}]"
                     ret_html += _ret
@@ -226,36 +749,56 @@ def on_ui_tabs():
         else:
             # normal merge
             ret_html += _run_merge(
-                weight_A=_weight_A, weight_B=_weight_B, model_0=dd_model_A, model_1=dd_model_B,
-                allow_overwrite=chk_allow_overwrite, base_alpha=base_alpha, model_Output=txt_model_O,
+                weight_A=_weight_A,
+                weight_B=_weight_B,
+                model_0=dd_model_A,
+                model_1=dd_model_B,
+                allow_overwrite=chk_allow_overwrite,
+                base_alpha=base_alpha,
+                model_Output=txt_model_O,
                 verbose=chk_verbose_mbw,
                 save_as_safetensors=chk_save_as_safetensors,
                 save_as_half=chk_save_as_half,
-                skip_position_ids=radio_position_ids
-                )
+                skip_position_ids=radio_position_ids,
+            )
 
         sd_models.list_models()
-        print( "#### All merge process done. ####")
+        print("#### All merge process done. ####")
 
         return gr.update(value=f"{ret_html}")
+
     btn_do_merge_block_weighted.click(
         fn=onclick_btn_do_merge_block_weighted,
         inputs=[dd_model_A, dd_model_B, txt_multi_process_cmd]
-            + sl_A_IN + sl_A_MID + sl_A_OUT + sl_B_IN + sl_B_MID + sl_B_OUT
-            + [txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite]
-            + [chk_save_as_safetensors, chk_save_as_half, radio_position_ids],
-        outputs=[html_output_block_weight_info]
+        + sl_A_IN
+        + sl_A_MID
+        + sl_A_OUT
+        + sl_B_IN
+        + sl_B_MID
+        + sl_B_OUT
+        + [txt_model_O, sl_base_alpha, chk_verbose_mbw, chk_allow_overwrite]
+        + [chk_save_as_safetensors, chk_save_as_half, radio_position_ids],
+        outputs=[html_output_block_weight_info],
     )
 
-    def _run_merge(weight_A, weight_B, model_0, model_1, allow_overwrite=False, base_alpha=0,
-        model_Output="", verbose=False, params=[],
+    def _run_merge(
+        weight_A,
+        weight_B,
+        model_0,
+        model_1,
+        allow_overwrite=False,
+        base_alpha=0,
+        model_Output="",
+        verbose=False,
+        params=[],
         save_as_safetensors=False,
         save_as_half=False,
         skip_position_ids=0,
+    ):
+        def validate_output_filename(
+            output_filename, save_as_safetensors=False, save_as_half=False
         ):
-
-        def validate_output_filename(output_filename, save_as_safetensors=False, save_as_half=False):
-            output_filename = re.sub(r'[\\|:|?|"|<|>|\|\*]', '-', output_filename)
+            output_filename = re.sub(r'[\\|:|?|"|<|>|\|\*]', "-", output_filename)
             filename_body, filename_ext = os.path.splitext(output_filename)
             _ret = output_filename
             _footer = "-half" if save_as_half else ""
@@ -282,39 +825,61 @@ def on_ui_tabs():
                                 _model_name = _model_info.title.split(" ")[0]
                                 if _model_name and _model_name.strip() != "":
                                     if _item_l.lower() == "model_a":
-                                        print(f"  * Model changed: {model_0} -> {_model_info.title}")
+                                        print(
+                                            f"  * Model changed: {model_0} -> {_model_info.title}"
+                                        )
                                         model_0 = _model_info.title
                                     elif _item_l.lower() == "model_b":
-                                        print(f"  * Model changed: {model_1} -> {_model_info.title}")
+                                        print(
+                                            f"  * Model changed: {model_1} -> {_model_info.title}"
+                                        )
                                         model_1 = _model_info.title
 
                         elif _item_l.lower() == "preset_weights":
                             _weights = presetWeights.find_weight_by_name(_item_r)
-                            if _weights != "" and len(_weights.split(',')) == 25:
+                            if _weights != "" and len(_weights.split(",")) == 25:
                                 print(f"  * Weights changed by preset-name: {_item_r}")
                                 weight_B = _weights
-                                weight_A = ",".join([str(1-float(x)) for x in _weights.split(',')])
+                                weight_A = ",".join(
+                                    [str(1 - float(x)) for x in _weights.split(",")]
+                                )
                             else:
-                                print(f"  * Weights change :canceled: [{_item_r}][{_weights}][{len(_weights.split(','))}]")
+                                print(
+                                    f"  * Weights change :canceled: [{_item_r}][{_weights}][{len(_weights.split(','))}]"
+                                )
 
                         elif _item_l.lower() == "weight_values":
                             _weights = _item_r.strip()
-                            if _weights != "" and len(_weights.split(' ')) == 25:  # this is work-around to use space as separator. Double-meaning issue on commna which already used as value separator and weights separator.
+                            if (
+                                _weights != "" and len(_weights.split(" ")) == 25
+                            ):  # this is work-around to use space as separator. Double-meaning issue on commna which already used as value separator and weights separator.
                                 print(f"  * Weights changed: {_item_r}")
                                 weight_B = _weights
-                                weight_A = ",".join([str(1-float(x)) for x in _weights.split(' ')])
+                                weight_A = ",".join(
+                                    [str(1 - float(x)) for x in _weights.split(" ")]
+                                )
                             else:
-                                print(f"  * Weights change :canceled: [{_item_r}][{_weights}][{len(_weights.split(','))}]")
+                                print(
+                                    f"  * Weights change :canceled: [{_item_r}][{_weights}][{len(_weights.split(','))}]"
+                                )
 
                         elif _item_l.lower() == "base_alpha":
                             if float(_item_r) >= 0:
-                                print(f"  * base_alpha changed: {base_alpha} -> {_item_r}")
+                                print(
+                                    f"  * base_alpha changed: {base_alpha} -> {_item_r}"
+                                )
                                 base_alpha = float(_item_r)
 
                         elif _item_l.upper() == "O":
                             if _item_r.strip() != "":
-                                _ret = validate_output_filename(_item_r.strip(), save_as_safetensors=save_as_safetensors, save_as_half=save_as_half)
-                                print(f"  * Output filename changed:[{model_O}] -> [{_ret}]")
+                                _ret = validate_output_filename(
+                                    _item_r.strip(),
+                                    save_as_safetensors=save_as_safetensors,
+                                    save_as_half=save_as_half,
+                                )
+                                print(
+                                    f"  * Output filename changed:[{model_O}] -> [{_ret}]"
+                                )
                                 model_O = _ret
 
                         elif len(_item_l.split("_")) == 3:
@@ -341,7 +906,9 @@ def on_ui_tabs():
                             elif _AB == "B":
                                 weight_B = _apply_val(_AB, weight_B, _index, _item_r)
                         else:
-                            print(f"  * Waring: uncaught param found. ignored. [{_item_l}][{_item_r}]")
+                            print(
+                                f"  * Waring: uncaught param found. ignored. [{_item_l}][{_item_r}]"
+                            )
 
         #
         # Prepare params before run merge
@@ -357,9 +924,17 @@ def on_ui_tabs():
         if model_O == "":
             _a = os.path.splitext(os.path.basename(_model_A_name))[0]
             _b = os.path.splitext(os.path.basename(_model_B_name))[0]
-            model_O = f"bw-merge-{_a}-{_b}-{base_alpha}" if model_Output == "" else model_Output
-        model_O = validate_output_filename(model_O, save_as_safetensors=save_as_safetensors, save_as_half=save_as_half)
-        output_file = os.path.join(shared.cmd_opts.ckpt_dir or sd_models.model_path, model_O)
+            model_O = (
+                f"bw-merge-{_a}-{_b}-{base_alpha}"
+                if model_Output == ""
+                else model_Output
+            )
+        model_O = validate_output_filename(
+            model_O, save_as_safetensors=save_as_safetensors, save_as_half=save_as_half
+        )
+        output_file = os.path.join(
+            shared.cmd_opts.ckpt_dir or sd_models.model_path, model_O
+        )
         #
         # Check params
         #
@@ -369,7 +944,7 @@ def on_ui_tabs():
             return _err_msg + "<br />"
         if not allow_overwrite:
             if os.path.exists(output_file):
-                _err_msg = f"WARNING: output_file already exists. overwrite not allowed. skipped."
+                _err_msg = "WARNING: output_file already exists. overwrite not allowed. skipped."
                 print(_err_msg)
                 return _err_msg + "<br />"
 
@@ -385,13 +960,18 @@ def on_ui_tabs():
         print(f"  skip ids   : {skip_position_ids} : 0:None, 1:Skip, 2:Reset")
 
         result, ret_message = merge(
-            weight_A=weight_A, weight_B=weight_B, model_0=model_0, model_1=model_1,
-            allow_overwrite=allow_overwrite, base_alpha=base_alpha, output_file=output_file,
+            weight_A=weight_A,
+            weight_B=weight_B,
+            model_0=model_0,
+            model_1=model_1,
+            allow_overwrite=allow_overwrite,
+            base_alpha=base_alpha,
+            output_file=output_file,
             verbose=verbose,
             save_as_safetensors=save_as_safetensors,
             save_as_half=save_as_half,
             skip_position_ids=skip_position_ids,
-            )
+        )
         if result:
             ret_html = f"merged. {model_0} + {model_1} = {model_O} <br>"
             print("merged.")
@@ -399,15 +979,18 @@ def on_ui_tabs():
             ret_html = ret_message
             print("merge failed.")
 
-
         # save log to history.tsv
         sd_models.list_models()
         model_A_info = sd_models.get_closet_checkpoint_match(model_0)
         model_B_info = sd_models.get_closet_checkpoint_match(model_1)
-        model_O_info = sd_models.get_closet_checkpoint_match(os.path.basename(output_file))
+        model_O_info = sd_models.get_closet_checkpoint_match(
+            os.path.basename(output_file)
+        )
         if hasattr(model_O_info, "sha256") and model_O_info.sha256 is None:
-            model_O_info:CheckpointInfo = model_O_info
-            model_O_info.sha256 = hashes.sha256(model_O_info.filename, "checkpoint/" + model_O_info.title)
+            model_O_info: CheckpointInfo = model_O_info
+            model_O_info.sha256 = hashes.sha256(
+                model_O_info.filename, "checkpoint/" + model_O_info.title
+            )
         _names = presetWeights.find_names_by_weight(weight_B)
         if _names and len(_names) > 0:
             weight_name = _names[0]
@@ -416,94 +999,222 @@ def on_ui_tabs():
 
         def model_name(model_info):
             return model_info.name if hasattr(model_info, "name") else model_info.title
+
         def model_sha256(model_info):
             return model_info.sha256 if hasattr(model_info, "sha256") else ""
+
         mergeHistory.add_history(
-                model_name(model_A_info),
-                model_A_info.hash,
-                model_sha256(model_A_info),
-                model_name(model_B_info),
-                model_B_info.hash,
-                model_sha256(model_B_info),
-                model_name(model_O_info),
-                model_O_info.hash,
-                model_sha256(model_O_info),
-                base_alpha,
-                weight_A,
-                weight_B,
-                weight_name
-                )
+            model_name(model_A_info),
+            model_A_info.hash,
+            model_sha256(model_A_info),
+            model_name(model_B_info),
+            model_B_info.hash,
+            model_sha256(model_B_info),
+            model_name(model_O_info),
+            model_O_info.hash,
+            model_sha256(model_O_info),
+            base_alpha,
+            weight_A,
+            weight_B,
+            weight_name,
+        )
 
         return ret_html
 
     btn_clear_weighted.click(
-        fn=lambda: [gr.update(value=0.5) for _ in range(25*2)],
+        fn=lambda: [gr.update(value=0.5) for _ in range(25 * 2)],
         inputs=[],
         outputs=[
-            sl_IN_A_00, sl_IN_A_01, sl_IN_A_02, sl_IN_A_03, sl_IN_A_04, sl_IN_A_05,
-            sl_IN_A_06, sl_IN_A_07, sl_IN_A_08, sl_IN_A_09, sl_IN_A_10, sl_IN_A_11,
+            sl_IN_A_00,
+            sl_IN_A_01,
+            sl_IN_A_02,
+            sl_IN_A_03,
+            sl_IN_A_04,
+            sl_IN_A_05,
+            sl_IN_A_06,
+            sl_IN_A_07,
+            sl_IN_A_08,
+            sl_IN_A_09,
+            sl_IN_A_10,
+            sl_IN_A_11,
             sl_M_A_00,
-            sl_OUT_A_00, sl_OUT_A_01, sl_OUT_A_02, sl_OUT_A_03, sl_OUT_A_04, sl_OUT_A_05,
-            sl_OUT_A_06, sl_OUT_A_07, sl_OUT_A_08, sl_OUT_A_09, sl_OUT_A_10, sl_OUT_A_11,
-            sl_IN_B_00, sl_IN_B_01, sl_IN_B_02, sl_IN_B_03, sl_IN_B_04, sl_IN_B_05,
-            sl_IN_B_06, sl_IN_B_07, sl_IN_B_08, sl_IN_B_09, sl_IN_B_10, sl_IN_B_11,
+            sl_OUT_A_00,
+            sl_OUT_A_01,
+            sl_OUT_A_02,
+            sl_OUT_A_03,
+            sl_OUT_A_04,
+            sl_OUT_A_05,
+            sl_OUT_A_06,
+            sl_OUT_A_07,
+            sl_OUT_A_08,
+            sl_OUT_A_09,
+            sl_OUT_A_10,
+            sl_OUT_A_11,
+            sl_IN_B_00,
+            sl_IN_B_01,
+            sl_IN_B_02,
+            sl_IN_B_03,
+            sl_IN_B_04,
+            sl_IN_B_05,
+            sl_IN_B_06,
+            sl_IN_B_07,
+            sl_IN_B_08,
+            sl_IN_B_09,
+            sl_IN_B_10,
+            sl_IN_B_11,
             sl_M_B_00,
-            sl_OUT_B_00, sl_OUT_B_01, sl_OUT_B_02, sl_OUT_B_03, sl_OUT_B_04, sl_OUT_B_05,
-            sl_OUT_B_06, sl_OUT_B_07, sl_OUT_B_08, sl_OUT_B_09, sl_OUT_B_10, sl_OUT_B_11,
-        ]
+            sl_OUT_B_00,
+            sl_OUT_B_01,
+            sl_OUT_B_02,
+            sl_OUT_B_03,
+            sl_OUT_B_04,
+            sl_OUT_B_05,
+            sl_OUT_B_06,
+            sl_OUT_B_07,
+            sl_OUT_B_08,
+            sl_OUT_B_09,
+            sl_OUT_B_10,
+            sl_OUT_B_11,
+        ],
     )
 
     def on_change_dd_preset_weight(dd_preset_weight):
         _weights = presetWeights.find_weight_by_name(dd_preset_weight)
         _ret = on_btn_apply_block_weight_from_txt(_weights)
         return [gr.update(value=_weights)] + _ret
+
     dd_preset_weight.change(
         fn=on_change_dd_preset_weight,
         inputs=[dd_preset_weight],
         outputs=[
             txt_block_weight,
-            sl_IN_A_00, sl_IN_A_01, sl_IN_A_02, sl_IN_A_03, sl_IN_A_04, sl_IN_A_05,
-            sl_IN_A_06, sl_IN_A_07, sl_IN_A_08, sl_IN_A_09, sl_IN_A_10, sl_IN_A_11,
+            sl_IN_A_00,
+            sl_IN_A_01,
+            sl_IN_A_02,
+            sl_IN_A_03,
+            sl_IN_A_04,
+            sl_IN_A_05,
+            sl_IN_A_06,
+            sl_IN_A_07,
+            sl_IN_A_08,
+            sl_IN_A_09,
+            sl_IN_A_10,
+            sl_IN_A_11,
             sl_M_A_00,
-            sl_OUT_A_00, sl_OUT_A_01, sl_OUT_A_02, sl_OUT_A_03, sl_OUT_A_04, sl_OUT_A_05,
-            sl_OUT_A_06, sl_OUT_A_07, sl_OUT_A_08, sl_OUT_A_09, sl_OUT_A_10, sl_OUT_A_11,
-            sl_IN_B_00, sl_IN_B_01, sl_IN_B_02, sl_IN_B_03, sl_IN_B_04, sl_IN_B_05,
-            sl_IN_B_06, sl_IN_B_07, sl_IN_B_08, sl_IN_B_09, sl_IN_B_10, sl_IN_B_11,
+            sl_OUT_A_00,
+            sl_OUT_A_01,
+            sl_OUT_A_02,
+            sl_OUT_A_03,
+            sl_OUT_A_04,
+            sl_OUT_A_05,
+            sl_OUT_A_06,
+            sl_OUT_A_07,
+            sl_OUT_A_08,
+            sl_OUT_A_09,
+            sl_OUT_A_10,
+            sl_OUT_A_11,
+            sl_IN_B_00,
+            sl_IN_B_01,
+            sl_IN_B_02,
+            sl_IN_B_03,
+            sl_IN_B_04,
+            sl_IN_B_05,
+            sl_IN_B_06,
+            sl_IN_B_07,
+            sl_IN_B_08,
+            sl_IN_B_09,
+            sl_IN_B_10,
+            sl_IN_B_11,
             sl_M_B_00,
-            sl_OUT_B_00, sl_OUT_B_01, sl_OUT_B_02, sl_OUT_B_03, sl_OUT_B_04, sl_OUT_B_05,
-            sl_OUT_B_06, sl_OUT_B_07, sl_OUT_B_08, sl_OUT_B_09, sl_OUT_B_10, sl_OUT_B_11,
-            ]
+            sl_OUT_B_00,
+            sl_OUT_B_01,
+            sl_OUT_B_02,
+            sl_OUT_B_03,
+            sl_OUT_B_04,
+            sl_OUT_B_05,
+            sl_OUT_B_06,
+            sl_OUT_B_07,
+            sl_OUT_B_08,
+            sl_OUT_B_09,
+            sl_OUT_B_10,
+            sl_OUT_B_11,
+        ],
     )
 
     def on_btn_reload_checkpoint_mbw():
         sd_models.list_models()
-        return [gr.update(choices=sd_models.checkpoint_tiles()), gr.update(choices=sd_models.checkpoint_tiles())]
+        return [
+            gr.update(choices=sd_models.checkpoint_tiles()),
+            gr.update(choices=sd_models.checkpoint_tiles()),
+        ]
+
     btn_reload_checkpoint_mbw.click(
-        fn=on_btn_reload_checkpoint_mbw,
-        inputs=[],
-        outputs=[dd_model_A, dd_model_B]
+        fn=on_btn_reload_checkpoint_mbw, inputs=[], outputs=[dd_model_A, dd_model_B]
     )
 
     def on_btn_apply_block_weight_from_txt(txt_block_weight):
         if not txt_block_weight or txt_block_weight == "":
-            return [gr.update() for _ in range(25*2)]
+            return [gr.update() for _ in range(25 * 2)]
         _list = [x.strip() for x in txt_block_weight.split(",")]
-        if(len(_list) != 25):
-            return [gr.update() for _ in range(25*2)]
-        return [gr.update(value=str(1-float(x))) for x in _list] + [gr.update(value=x) for x in _list]
+        if len(_list) != 25:
+            return [gr.update() for _ in range(25 * 2)]
+        return [gr.update(value=str(1 - float(x))) for x in _list] + [
+            gr.update(value=x) for x in _list
+        ]
+
     btn_apply_block_weithg_from_txt.click(
         fn=on_btn_apply_block_weight_from_txt,
         inputs=[txt_block_weight],
         outputs=[
-            sl_IN_A_00, sl_IN_A_01, sl_IN_A_02, sl_IN_A_03, sl_IN_A_04, sl_IN_A_05,
-            sl_IN_A_06, sl_IN_A_07, sl_IN_A_08, sl_IN_A_09, sl_IN_A_10, sl_IN_A_11,
+            sl_IN_A_00,
+            sl_IN_A_01,
+            sl_IN_A_02,
+            sl_IN_A_03,
+            sl_IN_A_04,
+            sl_IN_A_05,
+            sl_IN_A_06,
+            sl_IN_A_07,
+            sl_IN_A_08,
+            sl_IN_A_09,
+            sl_IN_A_10,
+            sl_IN_A_11,
             sl_M_A_00,
-            sl_OUT_A_00, sl_OUT_A_01, sl_OUT_A_02, sl_OUT_A_03, sl_OUT_A_04, sl_OUT_A_05,
-            sl_OUT_A_06, sl_OUT_A_07, sl_OUT_A_08, sl_OUT_A_09, sl_OUT_A_10, sl_OUT_A_11,
-            sl_IN_B_00, sl_IN_B_01, sl_IN_B_02, sl_IN_B_03, sl_IN_B_04, sl_IN_B_05,
-            sl_IN_B_06, sl_IN_B_07, sl_IN_B_08, sl_IN_B_09, sl_IN_B_10, sl_IN_B_11,
+            sl_OUT_A_00,
+            sl_OUT_A_01,
+            sl_OUT_A_02,
+            sl_OUT_A_03,
+            sl_OUT_A_04,
+            sl_OUT_A_05,
+            sl_OUT_A_06,
+            sl_OUT_A_07,
+            sl_OUT_A_08,
+            sl_OUT_A_09,
+            sl_OUT_A_10,
+            sl_OUT_A_11,
+            sl_IN_B_00,
+            sl_IN_B_01,
+            sl_IN_B_02,
+            sl_IN_B_03,
+            sl_IN_B_04,
+            sl_IN_B_05,
+            sl_IN_B_06,
+            sl_IN_B_07,
+            sl_IN_B_08,
+            sl_IN_B_09,
+            sl_IN_B_10,
+            sl_IN_B_11,
             sl_M_B_00,
-            sl_OUT_B_00, sl_OUT_B_01, sl_OUT_B_02, sl_OUT_B_03, sl_OUT_B_04, sl_OUT_B_05,
-            sl_OUT_B_06, sl_OUT_B_07, sl_OUT_B_08, sl_OUT_B_09, sl_OUT_B_10, sl_OUT_B_11,
-        ]
+            sl_OUT_B_00,
+            sl_OUT_B_01,
+            sl_OUT_B_02,
+            sl_OUT_B_03,
+            sl_OUT_B_04,
+            sl_OUT_B_05,
+            sl_OUT_B_06,
+            sl_OUT_B_07,
+            sl_OUT_B_08,
+            sl_OUT_B_09,
+            sl_OUT_B_10,
+            sl_OUT_B_11,
+        ],
     )

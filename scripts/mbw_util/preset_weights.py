@@ -6,14 +6,13 @@ from csv import DictReader
 
 from modules import scripts
 
-
 CSV_FILE_PATH = "csv/preset.tsv"
 MYPRESET_PATH = "csv/preset_own.tsv"
 HEADER = ["preset_name", "preset_weights"]
 path_root = scripts.basedir()
 
 
-class PresetWeights():
+class PresetWeights:
     def __init__(self):
         self.presets = {}
 
@@ -22,14 +21,18 @@ class PresetWeights():
                 reader = DictReader(f, delimiter="\t")
                 lines_dict = [row for row in reader]
                 for line_dict in lines_dict:
-                    _w = ",".join([f"{x.strip()}" for x in line_dict["preset_weights"].split(",")])
+                    _w = ",".join(
+                        [f"{x.strip()}" for x in line_dict["preset_weights"].split(",")]
+                    )
                     self.presets.update({line_dict["preset_name"]: _w})
 
         with open(os.path.join(path_root, CSV_FILE_PATH), "r") as f:
             reader = DictReader(f, delimiter="\t")
             lines_dict = [row for row in reader]
             for line_dict in lines_dict:
-                _w = ",".join([f"{x.strip()}" for x in line_dict["preset_weights"].split(",")])
+                _w = ",".join(
+                    [f"{x.strip()}" for x in line_dict["preset_weights"].split(",")]
+                )
                 self.presets.update({line_dict["preset_name"]: _w})
 
     def get_preset_name_list(self):
