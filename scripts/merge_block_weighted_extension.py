@@ -13,6 +13,7 @@ from modules import script_callbacks
 
 from scripts.mbw import ui_mbw
 from scripts.mbw_each import ui_mbw_each
+from scripts.mbw_only import ui_mbw_only
 
 
 #
@@ -26,6 +27,9 @@ def on_ui_tabs():
 
         with gr.Tab("MBW Each", elem_id="tab_mbw_each"):
             ui_mbw_each.on_ui_tabs()
+
+        with gr.Tab("MBW Only", elem_id="tab_mbw_only"):
+            ui_mbw_only.on_ui_tabs()
 
     # return required as (gradio_component, title, elem_id)
     return (main_block, "Merge Block Weighted", "merge_block_weighted"),
