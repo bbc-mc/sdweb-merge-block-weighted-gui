@@ -22,7 +22,7 @@ def on_ui_tabs():
     with gr.Column():
         with gr.Row():
             with gr.Column(variant="panel"):
-                html_output_block_weight_info = gr.HTML()
+                html_output_block_weight_info = gr.HTML(value="(...)")
                 with gr.Row():
                     btn_do_merge_block_weighted = gr.Button(value="Run Merge", variant="primary")
                     btn_clear_weight = gr.Button(value="Clear values")
