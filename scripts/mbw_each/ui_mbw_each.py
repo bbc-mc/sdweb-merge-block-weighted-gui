@@ -24,7 +24,7 @@ def on_ui_tabs():
             with gr.Column(variant="panel"):
                 with gr.Row():
                     txt_multi_process_cmd = gr.TextArea(label="Multi Proc Cmd", placeholder="Keep empty if dont use.")
-                html_output_block_weight_info = gr.HTML()
+                html_output_block_weight_info = gr.HTML(value="(...)")
                 with gr.Row():
                     btn_do_merge_block_weighted = gr.Button(value="Run Merge", variant="primary")
                     btn_clear_weighted = gr.Button(value="Clear values")
