@@ -130,7 +130,12 @@ def merge(weights:list, model_0, model_1, device="cpu", base_alpha=0.5,
                 count_target_of_basealpha = count_target_of_basealpha + 1
                 dprint(f"base_alpha applied: [{key}]", verbose)
 
-            theta_0[key] = (1 - current_alpha) * theta_0[key] + current_alpha * theta_1[key]
+            if current_alpha == 1:
+                theta_0[key] = theta_1[key]
+            elif current_alpha == 0:
+                theta_0[key] = theta_0[key]
+            else:
+                theta_0[key] = (1 - current_alpha) * theta_0[key] + current_alpha * theta_1[key]
 
             if save_as_half:
                 theta_0[key] = theta_0[key].half()
