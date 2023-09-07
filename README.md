@@ -224,7 +224,7 @@
 
 ```
 a∈{0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24}
-S=100/24` - Steps
+`S=100/24` - Steps
 `𝝅` - number Pi
 `Q=2` - Ratio
 ```
@@ -234,9 +234,9 @@ S=100/24` - Steps
 | `Cosine`             | `x=a(S)100` & `y=(1-COS((x-1)*𝝅))/2`                                                           |
 | `Smoothstep`         | `x=a(S)100` & `y=3x^2-2x^3`                                                                     |
 | `Smoothstep*Q`       | `x=a(S)100` & ( when `x∈<0;0.5>` , `y=Q(3x^2-2x^3)` ∨ when `x∈(0.5;1>` , `y=2-Q(3x^2-2x^3` )    |
-| `Smoothstep\Q`       | ( when `a<=12` , `x=a(S/Q)100` ∨ when `12<a<=24` , `x=(24-a)(S/Q)100` )  &  `y=3x^2-2x^3`       |
-| `True_Cubic_Hermite` | `x=a(S)100` & `y=(2*x₁^3-3*x₁^2+1)*(x₁-xₙ₋₁)+(x₁^3-2*x₁^2+x₁)*S+(-2*x₁^3+3*x₁^2)*(x₁^3-x₁^2)*S` |
-| `Fake_Cubic_Hermite` | `x=a(S)100` & `y=(x^3-2*x^2+x)*S+(-2*x^3+3*x^2)*(x^3-x^2)*S`                                    |
+| `Smoothstep/Q`       | ( when `a<=12` , `x=a(S/Q)100` ∨ when `12<a<=24` , `x=(24-a)(S/Q)100` )  &  `y=3x^2-2x^3`       |
+| `True_Cubic_Hermite` | `x=a(S)100` & `y=(2*x^3-3*x^2+1)*(x₁-xₙ₋₁)+(x^3-2*x^2+x)*S+(-2*x^3+3*x^2)+(x^3-x^2)*S`          |
+| `Fake_Cubic_Hermite` | `x=a(S)100` & `y=                          (x^3-2*x^2+x)*S+(-2*x^3+3*x^2)+(x^3-x^2)*S`          |
 
 ## Special Thanks
 
